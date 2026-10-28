@@ -214,7 +214,7 @@ td{border-bottom:1px solid #e2e9e4}
 <section id="page-settings" class="hidden">
  <div class="panel"><div class="panelhead"><div><h2 class="h2">资料备份与设置</h2><div class="sub">先保存一份资料备份，再进行大量药品或库存录入。</div></div></div>
   <div class="notice">目前这个 HTML 是可操作的第一版原型，数据保存于当前浏览器。本机资料不会自动出现在其他设备。要实现 iPhone 与电脑同步，下一步需要建立 Supabase 云端数据库、登入权限与安全规则。</div>
-  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
+  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v25：药品资料编辑窗口新增目前库存量直接盘点调整，并自动写入库存异动记录。更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
   <div class="panel" style="margin-top:14px;border:1px solid #d9e2dc"><div class="panelhead"><div><h2 class="h2">库存来源检查</h2><div class="sub">逐批检查目前计算出库存总克数的来源；这里显示的是本机保存的库存批次。</div></div><button class="ghost" id="exportLots">导出库存明细</button></div><div id="lotsAudit"></div></div>
   <div class="field" style="margin-top:14px"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始药品清单不代表真实库存；新建资料时库存应为 0，需实际盘点并录入后才有库存。</textarea></div>
   <div class="notice" style="margin-top:14px"><b>库存初始化说明：</b>此操作会先下载一份当前资料备份，再要求二次确认；确认后将库存归零，并清除本机进货、调剂及异动记录。所有药品主档及其中已编辑的厂牌、规格、价格等资料会保留。请先确认备份文件已保存。</div>
@@ -511,13 +511,35 @@ function editMedicine(id){
  <div class="field"><label>销售原价／克（NT$）</label><input id="eSale" type="number" min="0" step=".0001" value="${num(m.salePrice)||""}"></div>
  <div class="field"><label>销售折扣价／克（NT$）</label><input id="eSaleDiscount" type="number" min="0" step=".0001" value="${num(m.saleDiscountPrice)||""}"></div>
  <div class="field"><label>低库存提醒（克）</label><input id="eMin" type="number" min="0" step=".01" value="${m.minStock===undefined||m.minStock===null?15:num(m.minStock)}"></div>
- </div><div class="notice" style="margin-top:12px">药品主档会保存厂牌、规格、净重与价格；批号和效期属于每一批进货，因此在资料卡中显示最近一批资料。若同一药名有不同厂牌或规格，请分别建立独立库存品项，避免混用库存。</div><div class="actions" style="margin-top:16px"><button class="primary" id="saveMed">保存修改</button><button class="ghost" id="closeModal">取消</button></div></div></div>`;
+ <div class="field wide"><label>目前库存量（克，可直接盘点修改）</label><input id="eCurrentStock" type="number" min="0" step=".01" value="${stockFor(m.id).toFixed(2)}"><small class="sub">目前批次合计：${stockFor(m.id).toFixed(2)} g。修改后会自动产生「库存盘点调整」记录，不会改动原始进货历史。</small></div>
+ </div><div class="notice" style="margin-top:12px">药品主档会保存厂牌、规格、净重与价格；批号和效期属于每一批进货，因此在资料卡中显示最近一批资料。若同一药名有不同厂牌或规格，请分别建立独立库存品项，避免混用库存。直接修改目前库存会留下盘点调整记录：增加库存会建立调整批次；减少库存会从现有批次扣减。</div><div class="actions" style="margin-top:16px"><button class="primary" id="saveMed">保存修改</button><button class="ghost" id="closeModal">取消</button></div></div></div>`;
  document.getElementById("closeModal").onclick=()=>document.getElementById("modalRoot").innerHTML="";
  document.getElementById("saveMed").onclick=()=>{
+  const targetRaw=document.getElementById("eCurrentStock").value.trim();
+  const targetStock=Number(targetRaw);
+  if(targetRaw===""||!Number.isFinite(targetStock)||targetStock<0){toast("目前库存量必须是 0 或以上的数字");return;}
+  const currentStock=stockFor(m.id);
+  const delta=+(targetStock-currentStock).toFixed(4);
   m.pinyin=document.getElementById("ePinyin").value.trim().toLowerCase();m.pinyinInitials=document.getElementById("ePinyinInitials").value.trim().toLowerCase().replace(/\s/g,"");m.meridian=document.getElementById("eMeridian").value.trim();m.brand=document.getElementById("eBrand").value.trim();m.pack=document.getElementById("ePack").value.trim();m.netWeight=num(document.getElementById("eWeight").value);
   m.listPrice=num(document.getElementById("eList").value);m.discount=num(document.getElementById("eDiscount").value);m.cost=num(document.getElementById("eCost").value);
   m.salePrice=num(document.getElementById("eSale").value);m.saleDiscountPrice=num(document.getElementById("eSaleDiscount").value);m.minStock=document.getElementById("eMin").value.trim()===""?15:num(document.getElementById("eMin").value);
-  save();document.getElementById("modalRoot").innerHTML="";toast("药品资料已保存");
+  if(Math.abs(delta)>=0.005){
+   const adjustId=uid("ADJ"),now=new Date().toISOString();
+   if(delta>0){
+    const existingLots=state.lots.filter(l=>l.medId===m.id&&num(l.remainingG)>0);
+    const currentCost=existingLots.reduce((sum,l)=>sum+num(l.remainingG)*num(l.costPerG),0);
+    const avgCost=currentStock>0?currentCost/currentStock:(num(m.netWeight)>0?num(m.cost)/num(m.netWeight):0);
+    const lot={id:uid("LOT"),medId:m.id,name:m.name,brand:m.brand||"库存盘点调整",pack:m.pack||"盘点调整",lotno:"盘点调整",expiry:"",netWeight:delta,remainingG:delta,costPerG:avgCost,packCost:delta*avgCost,qty:1,createdAt:now,adjustment:true,adjustmentRef:adjustId};
+    state.lots.push(lot);
+    state.movements.push({id:uid("MV"),date:now,type:"库存盘点调整（增加）",medId:m.id,name:m.name,brand:m.brand||"",grams:delta,costPerG:avgCost,lotId:lot.id,ref:adjustId});
+   }else{
+    let toRemove=Math.abs(delta);
+    const lots=state.lots.filter(l=>l.medId===m.id&&num(l.remainingG)>0).sort((a,b)=>(a.expiry||"9999").localeCompare(b.expiry||"9999")||(a.createdAt||"").localeCompare(b.createdAt||""));
+    for(const lot of lots){if(toRemove<=0.00001)break;const take=Math.min(toRemove,num(lot.remainingG));lot.remainingG=+(num(lot.remainingG)-take).toFixed(4);toRemove=+(toRemove-take).toFixed(4);state.movements.push({id:uid("MV"),date:now,type:"库存盘点调整（减少）",medId:m.id,name:m.name,brand:lot.brand||m.brand||"",grams:-take,costPerG:num(lot.costPerG),lotId:lot.id,ref:adjustId});}
+    if(toRemove>0.005){toast("库存调整失败：现有批次不足，请重新打开资料核对");return;}
+   }
+  }
+  save();document.getElementById("modalRoot").innerHTML="";renderAll();toast(Math.abs(delta)>=0.005?`药品资料已保存，库存已调整 ${delta>0?"+":""}${delta.toFixed(2)} g`:"药品资料已保存");
  };
 }
 document.getElementById("medSearch").oninput=()=>{localStorage.setItem("scmed_category_stats_open","0");localStorage.setItem("scmed_purchase_stats_open","0");renderMedicines()};document.getElementById("typeFilter").onchange=renderMedicines;document.getElementById("categoryFilter").onchange=renderMedicines;
