@@ -73,6 +73,8 @@
    <div class="field"><label>批号</label><input id="pLot" placeholder="厂家批号"></div>
    <div class="field"><label>有效期限</label><input id="pExpiry" type="date"></div>
   </div>
+  <div class="notice" style="margin-top:12px">选择已有药品后，系统会自动带入药品资料中保存的厂牌、包装规格、每包装净重、厂家牌价与折扣；若有上次进货批次，也会带入最近一次批号与效期供核对。进货数量不会自动填写。所有带入内容都可以修改；请务必核对本次实际包装的批号与效期。</div>
+  <div class="actions" style="margin-top:10px"><button class="ghost" id="fillPurchaseDefaults" type="button">重新带入已有资料</button></div>
   <div class="notice" style="margin-top:14px" id="purchaseCalc">填写牌价与包装规格后，系统会预估进货成本。未填写牌价时不会虚构成本。</div>
   <div class="actions" style="margin-top:14px"><button class="primary" id="savePurchase">确认入库</button><button class="ghost" id="resetPurchase">清空表单</button></div>
  </div>
@@ -84,8 +86,10 @@
  <div class="panel"><div class="panelhead"><div><h2 class="h2">资料备份与设置</h2><div class="sub">先保存一份资料备份，再进行大量药品或库存录入。</div></div></div>
   <div class="notice">目前这个 HTML 是可操作的第一版原型，数据保存于当前浏览器。本机资料不会自动出现在其他设备。要实现 iPhone 与电脑同步，下一步需要建立 Supabase 云端数据库、登入权限与安全规则。</div>
   <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v5：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
-  <div class="field"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始清单未包含真实库存，因此库存默认为 0，需实际盘点后录入。</textarea></div>
-  <div class="actions" style="margin-top:12px"><button class="danger" id="resetDemo">清除本机操作数据（保留药品主档）</button></div>
+  <div class="panel" style="margin-top:14px;border:1px solid #d9e2dc"><div class="panelhead"><div><h2 class="h2">库存来源检查</h2><div class="sub">逐批检查目前计算出库存总克数的来源；这里显示的是本机保存的库存批次。</div></div><button class="ghost" id="exportLots">导出库存明细</button></div><div id="lotsAudit"></div></div>
+  <div class="field" style="margin-top:14px"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始药品清单不代表真实库存；新建资料时库存应为 0，需实际盘点并录入后才有库存。</textarea></div>
+  <div class="notice" style="margin-top:14px"><b>库存初始化说明：</b>此操作会先下载一份当前资料备份，再要求二次确认；确认后将库存归零，并清除本机进货、调剂及异动记录。所有药品主档及其中已编辑的厂牌、规格、价格等资料会保留。请先确认备份文件已保存。</div>
+  <div class="actions" style="margin-top:12px"><button class="danger" id="resetDemo">初始化库存为 0（保留药品资料）</button></div>
  </div>
 </section>
 </main>
@@ -304,7 +308,26 @@ function renderPurchaseSelect(){
  if(hint)hint.textContent=q?`找到 ${matches.length} 项。重名药品会显示编号，请确认后选择。`:`共 ${matches.length} 项药品。输入中文、拼音（如 fuling）或拼音首字母（如 fl）筛选。`;
 }
 document.getElementById("pMedSearch").addEventListener("input",renderPurchaseSelect);
-document.getElementById("pMed").addEventListener("change",()=>{updatePurchasePriceFlag();purchaseEstimate();});
+function fillPurchaseDefaults(){
+ const med=getMed(document.getElementById("pMed").value);if(!med)return;
+ const lots=state.lots.filter(l=>l.medId===med.id).slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+ const latestLot=lots[0];
+ const purchases=state.purchases.filter(p=>p.medId===med.id).slice().sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+ const latestPurchase=purchases[0];
+ const setValue=(id,value)=>{document.getElementById(id).value=value===undefined||value===null?"":value;};
+ setValue("pBrand",med.brand||latestLot?.brand||latestPurchase?.brand||"");
+ setValue("pPack",med.pack||latestLot?.pack||latestPurchase?.pack||"");
+ const weight=num(med.netWeight)||num(latestPurchase?.weight)||(latestLot&&num(latestLot.qty)>0?num(latestLot.netWeight)/num(latestLot.qty):0);
+ setValue("pWeight",weight>0?weight:"");
+ const listPrice=num(latestPurchase?.price)||num(med.listPrice);
+ setValue("pList",listPrice>0?listPrice:"");
+ const discount=num(latestPurchase?.discount)||num(med.discount)||9;
+ setValue("pDiscount",discount);
+ setValue("pLot",latestLot?.lotno||"");setValue("pExpiry",latestLot?.expiry||"");
+ updatePurchasePriceFlag();purchaseEstimate();
+}
+document.getElementById("pMed").addEventListener("change",fillPurchaseDefaults);
+document.getElementById("fillPurchaseDefaults").addEventListener("click",()=>{fillPurchaseDefaults();toast("已带入现有药品资料；请核对批号与效期");});
 function updatePurchasePriceFlag(){
  const med=getMed(document.getElementById("pMed").value), raw=document.getElementById("pList").value, price=num(raw), root=document.getElementById("purchasePriceFlag");
  if(!root)return;
@@ -333,15 +356,28 @@ function renderHistory(){
  const list=state.movements.slice().sort((a,b)=>b.date.localeCompare(a.date));
  document.getElementById("historyTable").innerHTML=list.length?`<div class="tablewrap"><table><thead><tr><th>时间</th><th>类型</th><th>药品</th><th>厂牌</th><th>数量变化</th><th>单位成本</th><th>关联编号</th></tr></thead><tbody>${list.map(m=>`<tr><td>${new Date(m.date).toLocaleString("zh-TW")}</td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.name)}</td><td>${esc(m.brand||"—")}</td><td style="color:${m.grams<0?'#a83b35':'#285744'}">${m.grams>0?"+":""}${num(m.grams).toFixed(2)} g</td><td>${money(m.costPerG)}/g</td><td>${esc(m.ref||"—")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">尚无进货或调剂异动。</div>';
 }
-function renderAll(){renderStats();renderMedicines();renderPurchaseSelect();renderRecent();renderHistory();purchaseEstimate();}
+function renderLotsAudit(){
+ const root=document.getElementById("lotsAudit");if(!root)return;
+ const lots=state.lots.slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+ const total=lots.reduce((sum,l)=>sum+num(l.remainingG),0);
+ root.innerHTML=lots.length?`<div class="notice" style="margin-bottom:10px">当前批次 ${lots.length} 笔；剩余库存合计 <b>${total.toLocaleString("zh-TW",{maximumFractionDigits:2})} g</b>。若这些批次是测试数据，可先导出明细并备份，再使用下方「初始化库存为 0」。</div><div class="tablewrap"><table><thead><tr><th>进货日期</th><th>药品</th><th>厂牌</th><th>规格</th><th>批号</th><th>原始净重</th><th>剩余克数</th><th>效期</th><th>批次来源编号</th></tr></thead><tbody>${lots.map(l=>`<tr><td>${esc(l.createdAt?new Date(l.createdAt).toLocaleDateString("zh-TW"):"—")}</td><td>${esc(l.name||getMed(l.medId)?.name||"未知药品")}</td><td>${esc(l.brand||"—")}</td><td>${esc(l.pack||"—")}</td><td>${esc(l.lotno||"—")}</td><td>${num(l.netWeight).toFixed(2)} g</td><td><b>${num(l.remainingG).toFixed(2)} g</b></td><td>${esc(l.expiry||"—")}</td><td>${esc(l.id||"—")}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">目前没有库存批次，库存总克数应为 0 g。若首页仍显示非零，请重新载入网页后再检查。</div>`;
+}
+function renderAll(){renderStats();renderMedicines();renderPurchaseSelect();renderRecent();renderHistory();renderLotsAudit();purchaseEstimate();}
 function download(filename,text,type="application/json"){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
 function showBackupStatus(){const el=document.getElementById("backupStatus");if(!el)return;const last=localStorage.getItem("scmed_last_backup");el.textContent=last?"上次备份记录："+last+"。注意：这只是本机记录；请确认备份 JSON 文件确实已保存到「文件」或云端硬盘。":"尚未记录备份时间。建议定期下载 JSON 备份，并保存到 iPhone「文件」或云端硬盘。";}
 document.getElementById("exportJson").onclick=()=>{const now=new Date();const payload={app:"科学中药进销存",backupVersion:1,backupCreatedAt:now.toISOString(),data:state};download("科学中药进销存完整备份-"+now.toISOString().slice(0,10)+".json",JSON.stringify(payload,null,2));localStorage.setItem("scmed_last_backup",now.toLocaleString("zh-TW"));showBackupStatus();toast("已开始下载完整备份，请确认文件已保存");};
 document.getElementById("exportCsv").onclick=()=>{const rows=[["编号","药品名称","类型","类别","药物归经","厂牌","包装规格","净重g","厂家牌价","厂家折扣","进货成本","销售原价","销售折扣价","库存g"],...state.medicines.map(m=>[m.id,m.name,m.type,m.category,m.meridian,m.brand,m.pack,m.netWeight,m.listPrice,m.discount,m.cost,m.salePrice,m.saleDiscountPrice,stockFor(m.id)])];download("科学中药药品资料.csv","\ufeff"+rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n"),"text/csv;charset=utf-8");};
 document.getElementById("exportHistory").onclick=()=>{const rows=[["时间","类型","药品","厂牌","克数变化","单位成本","关联编号"],...state.movements.map(m=>[m.date,m.type,m.name,m.brand,m.grams,m.costPerG,m.ref])];download("科学中药库存异动.csv","\ufeff"+rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n"),"text/csv;charset=utf-8");};
 document.getElementById("importJson").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const parsed=JSON.parse(await f.text());const obj=parsed&&parsed.data?parsed.data:parsed;if(!Array.isArray(obj.medicines)||!Array.isArray(obj.lots)||!Array.isArray(obj.movements))throw new Error("格式不正确");if(!confirm("恢复备份会覆盖此浏览器目前的药品、库存与记录。建议先下载当前资料备份。确定恢复吗？"))return;state={...obj,dispenseOrders:Array.isArray(obj.dispenseOrders)?obj.dispenseOrders:[],purchases:Array.isArray(obj.purchases)?obj.purchases:[]};save();toast("备份恢复完成");}catch(err){toast("恢复失败：这不是有效的科学中药进销存备份档");}finally{e.target.value="";}};
-document.getElementById("resetDemo").onclick=()=>{if(confirm("确定清除本机进货、调剂与库存记录？药品主档会保留，但当前库存也会清空。建议先下载备份。")){state={medicines:INITIAL_MEDICINES, lots:[], movements:[], dispenseOrders:[], purchases:[], customCategories:state.customCategories||[]};save();toast("本机操作数据已清除");}};
+document.getElementById("exportLots").onclick=()=>{const rows=[["进货日期","药品","药品编号","厂牌","规格","批号","原始净重g","剩余克数g","效期","批次来源编号","单位成本"] ,...state.lots.map(l=>[l.createdAt||"",l.name||getMed(l.medId)?.name||"",l.medId||"",l.brand||"",l.pack||"",l.lotno||"",l.netWeight,l.remainingG,l.expiry||"",l.id||"",l.costPerG])];download("科学中药库存批次明细.csv","\ufeff"+rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n"),"text/csv;charset=utf-8");};
+document.getElementById("resetDemo").onclick=()=>{
+ if(!confirm("请先确认：系统将自动下载当前完整备份。接下来若再次确认，将清除本机库存批次、进货记录、调剂记录与库存异动；药品主档（包含已编辑的厂牌、规格、价格等）会保留。是否继续下载备份并进行下一步？"))return;
+ const now=new Date();const payload={app:"科学中药进销存",backupVersion:1,backupCreatedAt:now.toISOString(),data:state};download("初始化前备份-科学中药进销存-"+now.toISOString().slice(0,10)+".json",JSON.stringify(payload,null,2));
+ if(!confirm("备份下载已发起。请确认已保存到 iPhone「文件」或其他安全位置。确定后将把库存归零并清除本机进货、调剂与异动历史；药品主档会保留。此操作无法在网页内撤销。确定初始化吗？")){toast("已取消初始化，现有资料未更改");return;}
+ state={...state,lots:[],movements:[],dispenseOrders:[],purchases:[],customCategories:state.customCategories||[]};save();toast("库存已初始化为 0；药品主档与编辑过的资料已保留");goPage("settings");
+};
 renderAll();
+fillPurchaseDefaults();
 showBackupStatus();
 </script>
 </body>
