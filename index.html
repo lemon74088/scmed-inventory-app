@@ -80,12 +80,12 @@
  </div>
 </section>
 <section id="page-history" class="hidden">
- <div class="panel"><div class="panelhead"><div><h2 class="h2">库存异动记录</h2><div class="sub">进货与调剂确认记录；此版本保存在当前浏览器。</div></div><button class="ghost" id="exportHistory">导出 CSV</button></div><div id="historyTable"></div></div>
+ <div class="panel"><div class="panelhead"><div><h2 class="h2">库存异动记录</h2><div class="sub">进货与调剂确认记录；进货记录可删除（仅限未被使用的整批库存）。此版本保存在当前浏览器。</div></div><button class="ghost" id="exportHistory">导出 CSV</button></div><div id="historyTable"></div></div>
 </section>
 <section id="page-settings" class="hidden">
  <div class="panel"><div class="panelhead"><div><h2 class="h2">资料备份与设置</h2><div class="sub">先保存一份资料备份，再进行大量药品或库存录入。</div></div></div>
   <div class="notice">目前这个 HTML 是可操作的第一版原型，数据保存于当前浏览器。本机资料不会自动出现在其他设备。要实现 iPhone 与电脑同步，下一步需要建立 Supabase 云端数据库、登入权限与安全规则。</div>
-  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v5：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
+  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
   <div class="panel" style="margin-top:14px;border:1px solid #d9e2dc"><div class="panelhead"><div><h2 class="h2">库存来源检查</h2><div class="sub">逐批检查目前计算出库存总克数的来源；这里显示的是本机保存的库存批次。</div></div><button class="ghost" id="exportLots">导出库存明细</button></div><div id="lotsAudit"></div></div>
   <div class="field" style="margin-top:14px"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始药品清单不代表真实库存；新建资料时库存应为 0，需实际盘点并录入后才有库存。</textarea></div>
   <div class="notice" style="margin-top:14px"><b>库存初始化说明：</b>此操作会先下载一份当前资料备份，再要求二次确认；确认后将库存归零，并清除本机进货、调剂及异动记录。所有药品主档及其中已编辑的厂牌、规格、价格等资料会保留。请先确认备份文件已保存。</div>
@@ -354,7 +354,32 @@ function renderRecent(){const root=document.getElementById("recentDispenses"),it
 
 function renderHistory(){
  const list=state.movements.slice().sort((a,b)=>b.date.localeCompare(a.date));
- document.getElementById("historyTable").innerHTML=list.length?`<div class="tablewrap"><table><thead><tr><th>时间</th><th>类型</th><th>药品</th><th>厂牌</th><th>数量变化</th><th>单位成本</th><th>关联编号</th></tr></thead><tbody>${list.map(m=>`<tr><td>${new Date(m.date).toLocaleString("zh-TW")}</td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.name)}</td><td>${esc(m.brand||"—")}</td><td style="color:${m.grams<0?'#a83b35':'#285744'}">${m.grams>0?"+":""}${num(m.grams).toFixed(2)} g</td><td>${money(m.costPerG)}/g</td><td>${esc(m.ref||"—")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">尚无进货或调剂异动。</div>';
+ document.getElementById("historyTable").innerHTML=list.length?`<div class="sub" style="margin-bottom:8px">进货记录可删除：仅允许删除尚未被调剂使用的整批进货，避免库存账目不一致。手机上可横向滑动查看各栏位。</div><div class="tablewrap"><table><thead><tr><th>操作</th><th>时间</th><th>类型</th><th>药品</th><th>厂牌</th><th>数量变化</th><th>单位成本</th><th>关联编号</th></tr></thead><tbody>${list.map(m=>`<tr><td>${m.type==="进货入库"?`<button type="button" class="danger deletePurchase" data-lot-id="${esc(m.lotId||m.ref||"")}" data-movement-id="${esc(m.id||"")}" style="padding:7px 10px;white-space:nowrap">删除进货</button>`:"—"}</td><td>${new Date(m.date).toLocaleString("zh-TW")}</td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.name)}</td><td>${esc(m.brand||"—")}</td><td style="color:${m.grams<0?'#a83b35':'#285744'}">${m.grams>0?"+":""}${num(m.grams).toFixed(2)} g</td><td>${money(m.costPerG)}/g</td><td>${esc(m.ref||"—")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">尚无进货或调剂异动。</div>';
+ document.querySelectorAll(".deletePurchase").forEach(btn=>btn.onclick=()=>deletePurchaseRecord(btn.dataset.lotId,btn.dataset.movementId));
+}
+function deletePurchaseRecord(lotId,movementId){
+ const lot=state.lots.find(l=>String(l.id)===String(lotId));
+ const movement=state.movements.find(m=>String(m.id)===String(movementId));
+ if(!movement||movement.type!=="进货入库"){toast("找不到对应的进货记录，未做任何修改");return;}
+ if(!lot){if(!confirm("找不到对应库存批次。只删除这条进货异动记录，不会调整库存。确定继续吗？"))return;state.movements=state.movements.filter(m=>String(m.id)!==String(movementId));state.purchases=state.purchases.filter(p=>String(p.lotId)!==String(lotId));save();renderAll();toast("已删除进货异动记录");return;}
+ const original=num(lot.netWeight),remaining=num(lot.remainingG);
+ if(remaining+0.0001<original){alert(`这批进货已被使用，不能直接删除。
+原始净重：${original.toFixed(2)} g
+目前剩余：${remaining.toFixed(2)} g
+已使用：${(original-remaining).toFixed(2)} g
+
+为避免库存错误，本次未删除。`);return;}
+ if(!confirm(`确定删除这笔错误进货吗？
+
+药品：${lot.name||movement.name}
+厂牌：${lot.brand||movement.brand||"—"}
+批次净重：${original.toFixed(2)} g
+
+将删除该批库存、对应进货记录与异动记录；药品主档资料会保留。此操作无法在网页内撤销，建议先备份。`))return;
+ state.lots=state.lots.filter(l=>String(l.id)!==String(lotId));
+ state.movements=state.movements.filter(m=>String(m.id)!==String(movementId));
+ state.purchases=state.purchases.filter(p=>String(p.lotId)!==String(lotId));
+ save();renderAll();toast("已删除这笔进货及对应库存批次");
 }
 function renderLotsAudit(){
  const root=document.getElementById("lotsAudit");if(!root)return;
