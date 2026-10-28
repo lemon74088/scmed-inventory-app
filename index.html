@@ -152,7 +152,12 @@ td{border-bottom:1px solid #e2e9e4}
 <main>
 <section id="page-dispense">
  <div class="panel">
-  <div class="panelhead"><div><h2 class="h2">快速文字调剂</h2><div class="sub">药名与克数分开填写，默认显示 5 行；不够时可继续新增。</div></div><span class="tag">支持小数剂量</span></div>
+  <div class="panelhead"><div><h2 class="h2">快速文字调剂</h2><div class="sub">可手动输入，也可粘贴处方文字自动拆分药名与克数。</div></div><span class="tag">支持小数剂量</span></div>
+  <div class="formgrid" style="margin:12px 0;grid-template-columns:minmax(0,1fr)">
+   <div class="field"><label for="dispenseRecordNo">调剂记录编号（自动预设，可修改）</label><input id="dispenseRecordNo" class="search" type="text" autocomplete="off" placeholder="例如 RX-20261029-001"><div class="sub">保存前可以修改；编号不能与现有记录重复。</div></div>
+  </div>
+  <div class="actions" style="margin:8px 0 12px"><button type="button" class="soft" id="manualModeBtn">手动输入</button><button type="button" class="ghost" id="pasteModeBtn">复制贴上辨识</button></div>
+  <div id="pasteModePanel" class="notice hidden" style="margin-bottom:12px"><label for="prescriptionPaste" style="display:block;margin-bottom:8px">粘贴处方文字</label><textarea id="prescriptionPaste" class="textarea" rows="4" placeholder="例如：小柴胡汤0.6 丹参0.3 桔梗0.2 当归0.2"></textarea><div class="sub" style="margin:6px 0 10px">支持空格、逗号、顿号、冒号或换行分隔；剂量可写 0.6、0.6g 或 0.6克。辨识后仍需核对药名，不会直接扣库存。</div><button type="button" class="primary" id="parsePasteBtn">辨识并填入下方药名与克数</button></div>
   <div class="field" style="margin:12px 0">
    <label>服用时间（可选择）</label>
    <div class="actions" id="timingButtons" style="margin-top:4px">
@@ -209,7 +214,7 @@ td{border-bottom:1px solid #e2e9e4}
 <section id="page-settings" class="hidden">
  <div class="panel"><div class="panelhead"><div><h2 class="h2">资料备份与设置</h2><div class="sub">先保存一份资料备份，再进行大量药品或库存录入。</div></div></div>
   <div class="notice">目前这个 HTML 是可操作的第一版原型，数据保存于当前浏览器。本机资料不会自动出现在其他设备。要实现 iPhone 与电脑同步，下一步需要建立 Supabase 云端数据库、登入权限与安全规则。</div>
-  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
+  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
   <div class="panel" style="margin-top:14px;border:1px solid #d9e2dc"><div class="panelhead"><div><h2 class="h2">库存来源检查</h2><div class="sub">逐批检查目前计算出库存总克数的来源；这里显示的是本机保存的库存批次。</div></div><button class="ghost" id="exportLots">导出库存明细</button></div><div id="lotsAudit"></div></div>
   <div class="field" style="margin-top:14px"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始药品清单不代表真实库存；新建资料时库存应为 0，需实际盘点并录入后才有库存。</textarea></div>
   <div class="notice" style="margin-top:14px"><b>库存初始化说明：</b>此操作会先下载一份当前资料备份，再要求二次确认；确认后将库存归零，并清除本机进货、调剂及异动记录。所有药品主档及其中已编辑的厂牌、规格、价格等资料会保留。请先确认备份文件已保存。</div>
@@ -258,6 +263,11 @@ function money(n){return Number(n||0).toLocaleString("zh-TW",{style:"currency",c
 function num(n){return Number(n||0);}
 function toast(msg){const root=document.getElementById("toastRoot");root.innerHTML=`<div class="toast">${esc(msg)}</div>`;setTimeout(()=>root.innerHTML="",2600);}
 function uid(prefix){return prefix+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7);}
+function makeDefaultRecordNo(){const d=new Date(),date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("");const prefix="RX-"+date+"-";const used=(state.dispenseOrders||[]).map(o=>String(o.id||"" )).filter(id=>id.startsWith(prefix)).map(id=>parseInt(id.slice(prefix.length),10)).filter(Number.isFinite);return prefix+String(Math.max(0,...used)+1).padStart(3,"0");}
+function currentRecordNo(){return String(document.getElementById("dispenseRecordNo")?.value||"").trim();}
+function recordNoAvailable(id){return !!id&&!((state.dispenseOrders||[]).some(o=>String(o.id)===id));}
+function validateRecordNo(){const id=currentRecordNo();if(!id){toast("请填写调剂记录编号");return false;}if(!recordNoAvailable(id)){toast("这个记录编号已经使用，请修改编号");document.getElementById("dispenseRecordNo")?.focus();return false;}return true;}
+function resetRecordNo(){const el=document.getElementById("dispenseRecordNo");if(el)el.value=makeDefaultRecordNo();}
 function stockFor(medId){return state.lots.filter(l=>l.medId===medId).reduce((s,l)=>s+num(l.remainingG),0);}
 function costFor(medId){const lots=state.lots.filter(l=>l.medId===medId&&num(l.remainingG)>0).sort((a,b)=>(a.expiry||"9999").localeCompare(b.expiry||"9999"));let grams=lots.reduce((s,l)=>s+num(l.remainingG),0);return grams?lots.reduce((s,l)=>s+num(l.remainingG)*num(l.costPerG),0)/grams:0;}
 function getMed(id){return state.medicines.find(m=>m.id===id);}
@@ -356,19 +366,21 @@ function clearRxInputs(){document.querySelectorAll(".rx-row").forEach(r=>{r.quer
 function saveCalculationRecord(){
  const valid=parsedLines.length>0&&parsedLines.every(p=>p.med&&!p.error&&!p.duplicate&&p.status!=="ambiguous"&&p.status!=="unmatched"&&p.status!=="error");
  if(!valid){toast("请先完成药名匹配并处理重复项目");return;}
- const order={id:uid("CALC"),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\n"),status:"计算记录（未扣库存）",timing:rxTimingText(),durationDays:getDurationDays(),items:parsedLines.map(p=>({medId:p.med.id,name:p.med.name,brand:p.med.brand||"",perDoseGrams:num(p.grams),dosesPerDay:getDosesPerDay(),durationDays:getDurationDays(),grams:num(p.grams)*getCourseMultiplier(),costPerG:num(p.cost),cost:num(p.grams)*getCourseMultiplier()*num(p.cost),deducted:false}))};
- state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";clearRxInputs();toast("计算记录已保存，库存未变动");
+ if(!validateRecordNo())return;
+ const order={id:currentRecordNo(),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\n"),status:"计算记录（未扣库存）",timing:rxTimingText(),durationDays:getDurationDays(),items:parsedLines.map(p=>({medId:p.med.id,name:p.med.name,brand:p.med.brand||"",perDoseGrams:num(p.grams),dosesPerDay:getDosesPerDay(),durationDays:getDurationDays(),grams:num(p.grams)*getCourseMultiplier(),costPerG:num(p.cost),cost:num(p.grams)*getCourseMultiplier()*num(p.cost),deducted:false}))};
+ state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";clearRxInputs();resetRecordNo();toast("计算记录已保存，库存未变动");
 }
 function confirmDispense(){
+ if(!validateRecordNo())return;
  // Revalidate all stocks just before changing them.
  for(const p of parsedLines){if(!p.med||p.status!=="matched"||stockFor(p.med.id)<num(p.grams)*getCourseMultiplier()){toast("库存已变化或有未完成项目，请重新识别");parsePrescription();return;}}
- const order={id:uid("RX"),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\n"),status:"已调剂并扣库存",timing:rxTimingText(),durationDays:getDurationDays(),items:[]};
+ const order={id:currentRecordNo(),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\n"),status:"已调剂并扣库存",timing:rxTimingText(),durationDays:getDurationDays(),items:[]};
  for(const p of parsedLines){
   let remaining=num(p.grams)*getCourseMultiplier();
   const lots=state.lots.filter(l=>l.medId===p.med.id&&num(l.remainingG)>0).sort((a,b)=>(a.expiry||"9999").localeCompare(b.expiry||"9999"));
   for(const lot of lots){if(remaining<=0)break;const take=Math.min(remaining,num(lot.remainingG));lot.remainingG=+(num(lot.remainingG)-take).toFixed(4);remaining=+(remaining-take).toFixed(4);order.items.push({medId:p.med.id,name:p.med.name,brand:p.med.brand,perDoseGrams:num(p.grams),dosesPerDay:getDosesPerDay(),durationDays:getDurationDays(),grams:take,costPerG:num(lot.costPerG),cost:take*num(lot.costPerG),lotId:lot.id,deducted:true});state.movements.push({id:uid("MV"),date:order.date,type:"调剂出库",medId:p.med.id,name:p.med.name,grams:-take,costPerG:num(lot.costPerG),lotId:lot.id,ref:order.id});}
  }
- state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";clearRxInputs();toast("调剂已记录，库存已扣减");
+ state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";clearRxInputs();resetRecordNo();toast("调剂已记录，库存已扣减");
 }
 function goPage(page){
  document.querySelectorAll("[id^='page-']").forEach(el=>el.classList.toggle("hidden",el.id!=="page-"+page));
@@ -376,9 +388,20 @@ function goPage(page){
 }
 document.querySelectorAll("[data-page]").forEach(el=>el.addEventListener("click",()=>goPage(el.dataset.page)));
 document.getElementById("parseBtn").onclick=parsePrescription;
-document.getElementById("clearRx").onclick=()=>{document.querySelectorAll(".rx-row").forEach(r=>{r.querySelector(".rx-name").value="";r.querySelector(".rx-grams").value="";});parsedLines=[];document.getElementById("parseResults").innerHTML="";};
+document.getElementById("clearRx").onclick=()=>{document.querySelectorAll(".rx-row").forEach(r=>{r.querySelector(".rx-name").value="";r.querySelector(".rx-name").dataset.medId="";r.querySelector(".rx-grams").value="";});parsedLines=[];document.getElementById("parseResults").innerHTML="";};
+document.getElementById("manualModeBtn").onclick=()=>{document.getElementById("pasteModePanel").classList.add("hidden");document.getElementById("manualModeBtn").className="soft";document.getElementById("pasteModeBtn").className="ghost";};
+document.getElementById("pasteModeBtn").onclick=()=>{document.getElementById("pasteModePanel").classList.remove("hidden");document.getElementById("pasteModeBtn").className="soft";document.getElementById("manualModeBtn").className="ghost";document.getElementById("prescriptionPaste").focus();};
+document.getElementById("parsePasteBtn").onclick=()=>{
+ const text=document.getElementById("prescriptionPaste").value.trim();if(!text){toast("请先粘贴处方文字");return;}
+ const normalized=text.replace(/[０-９]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/．/g,".");
+ const re=/([^\d,，、;；:：\n]+?)\s*[:：]?\s*(\d+(?:\.\d+)?)\s*(?:g|克)?/gi;let match,pairs=[];
+ while((match=re.exec(normalized))!==null){const name=match[1].trim().replace(/[，,、;；:：]+$/g,"");const grams=match[2];if(name&&Number(grams)>0)pairs.push({name,grams});}
+ if(!pairs.length){toast("没有辨识到「药名＋克数」，请检查格式，例如：丹参0.3g");return;}
+ const root=document.getElementById("rxRows");root.innerHTML="";pairs.forEach(p=>addRxRow(p.name,p.grams));if(!pairs.length)addRxRow();parsedLines=[];document.getElementById("parseResults").innerHTML="";document.getElementById("pasteModePanel").classList.add("hidden");document.getElementById("pasteModeBtn").className="ghost";document.getElementById("manualModeBtn").className="soft";toast("已拆分 "+pairs.length+" 味药，请核对后点击「匹配药品与计算」");
+};
 document.getElementById("addRxRow").onclick=()=>addRxRow();
 for(let i=0;i<5;i++)addRxRow();
+resetRecordNo();
 function renderStats(){
  document.getElementById("statMeds").textContent=state.medicines.length;
  document.getElementById("statStockItems").textContent=state.medicines.filter(m=>m.brand&&m.pack&&num(m.netWeight)>0).length;
