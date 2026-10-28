@@ -125,6 +125,17 @@ function refreshRxRowButtons(){
  const rows=[...document.querySelectorAll(".rx-row")];
  rows.forEach(r=>{r.querySelector(".remove-row").disabled=rows.length===1;});
 }
+function findCandidates(input){
+ const q=cleanName(input);if(!q)return [];
+ const meds=state.medicines;
+ // Exact Chinese/name match wins; if the name itself is duplicated, return all for explicit disambiguation.
+ const exactName=meds.filter(m=>cleanName(m.name)===q);if(exactName.length)return exactName;
+ const exactPinyin=meds.filter(m=>cleanName(m.pinyin)===q);if(exactPinyin.length)return exactPinyin;
+ const exactInitials=meds.filter(m=>cleanName(m.pinyinInitials)===q);if(exactInitials.length)return exactInitials;
+ // Partial search is accepted only when it identifies one unique medicine.
+ const partial=meds.filter(m=>[m.name,m.pinyin,m.pinyinInitials].some(v=>cleanName(v).includes(q)));
+ return partial;
+}
 function parsePrescription(){
  const lines=readRxRows();
  if(!lines.length){toast("请先输入药名与克数");return;}
@@ -144,28 +155,37 @@ function parsePrescription(){
 }
 function renderParseResults(){
  const root=document.getElementById("parseResults");
- const ok=parsedLines.length>0&&parsedLines.every(p=>p.status==="matched"||p.status==="short")&&parsedLines.every(p=>p.status==="matched")&&parsedLines.every(p=>!p.duplicate);
+ const allIdentified=parsedLines.length>0&&parsedLines.every(p=>p.med&&!p.error&&!p.duplicate&&p.status!=="ambiguous"&&p.status!=="unmatched"&&p.status!=="error");
+ const stockOk=allIdentified&&parsedLines.every(p=>p.status==="matched");
  const totalG=parsedLines.reduce((s,p)=>s+num(p.grams),0);
  const totalCost=parsedLines.reduce((s,p)=>s+num(p.grams)*num(p.cost),0);
- root.innerHTML=`<div class="resulttop"><div><div class="h2">识别结果</div><div class="sub">共 ${parsedLines.length} 行 · ${totalG.toFixed(2)} 克</div></div><div class="bigtotal">${money(totalCost)}</div></div>
- <div class="tablewrap"><table><thead><tr><th>输入药名</th><th>匹配药品</th><th>厂牌／规格</th><th>剂量</th><th>库存</th><th>单位成本</th><th>成本小计</th><th>状态</th></tr></thead><tbody>${parsedLines.map((p,i)=>{
- let status=p.status==="matched"?'<span class="tag">可确认</span>':p.status==="short"?'<span class="tag red">库存不足</span>':p.status==="setup"?'<span class="tag warn">待设置厂牌/规格</span>':p.status==="ambiguous"?'<span class="tag warn">多个匹配</span>':p.status==="unmatched"?'<span class="tag red">未匹配</span>':'<span class="tag red">格式错误</span>';
- return `<tr><td>${esc(p.raw)}</td><td>${esc(p.med?.name||p.name||"—")}</td><td>${esc(p.med?(p.med.brand||"未设置")+" / "+(p.med.pack||"未设置"):"—")}</td><td>${p.grams?Number(p.grams).toFixed(2)+" g":"—"}</td><td>${p.med?stockFor(p.med.id).toFixed(2)+" g":"—"}</td><td>${p.med?money(p.cost)+"/g":"—"}</td><td>${p.med?money(num(p.grams)*num(p.cost)):"—"}</td><td>${status}${p.duplicate?'<div class="sub">重复药名，请合并后再调剂</div>':""}</td></tr>`}).join("")}</tbody></table></div>
- <div class="actions" style="margin-top:14px"><button class="primary" id="confirmDispense" ${ok?"":"disabled"}>确认调剂并扣库存</button><button class="ghost" id="editRx">返回修改</button></div>
- ${ok?"":'<div class="notice" style="margin-top:10px">有药品尚未匹配、尚未设置库存品项、库存不足或出现重复行。请先在药品资料与进货页面完成设置后再确认。</div>'}`;
+ root.innerHTML=`<div class="resulttop"><div><div class="h2">识别与计算结果</div><div class="sub">共 ${parsedLines.length} 行 · ${totalG.toFixed(2)} 克 · ${allIdentified?"药名已匹配":"仍有药名需要确认"}</div></div><div class="bigtotal">${money(totalCost)}${totalCost===0?'<div class="sub">尚无成本资料</div>':''}</div></div>
+ <div class="tablewrap"><table><thead><tr><th>输入药名</th><th>匹配药品</th><th>厂牌／规格</th><th>剂量</th><th>库存</th><th>单位成本</th><th>成本小计</th><th>状态</th></tr></thead><tbody>${parsedLines.map(p=>{
+ let status=p.status==="matched"?'<span class="tag">可扣库存</span>':p.status==="short"?'<span class="tag red">库存不足</span>':p.status==="setup"?'<span class="tag warn">待设置厂牌/规格</span>':p.status==="ambiguous"?'<span class="tag warn">多个匹配，请核对</span>':p.status==="unmatched"?'<span class="tag red">未匹配</span>':'<span class="tag red">格式错误</span>';
+ return `<tr><td>${esc(p.raw)}</td><td>${esc(p.med?.name||p.name||"—")}${p.med?`<div class="sub">${esc(p.med.id)} · ${esc(p.med.pinyin||"")}</div>`:""}</td><td>${esc(p.med?(p.med.brand||"未设置")+" / "+(p.med.pack||"未设置"):"—")}</td><td>${p.grams?Number(p.grams).toFixed(2)+" g":"—"}</td><td>${p.med?stockFor(p.med.id).toFixed(2)+" g":"—"}</td><td>${p.med&&p.cost?money(p.cost)+"/g":"待补成本"}</td><td>${p.med&&p.cost?money(num(p.grams)*num(p.cost)):"—"}</td><td>${status}${p.duplicate?'<div class="sub">同一药名重复输入，请合并剂量</div>':""}</td></tr>`}).join("")}</tbody></table></div>
+ <div class="actions" style="margin-top:14px"><button class="primary" id="confirmDispense" ${stockOk?"":"disabled"}>确认调剂并扣库存</button><button class="soft" id="saveCalcRecord" ${allIdentified?"":"disabled"}>保存计算记录（不扣库存）</button><button class="ghost" id="editRx">返回修改</button></div>
+ ${stockOk?'<div class="notice" style="margin-top:10px">药品匹配、厂牌规格及库存均符合条件，可以确认扣库存。</div>':`<div class="notice" style="margin-top:10px">${allIdentified?"可以保存计算记录，但库存不足或尚未设置完整厂牌规格，因此不能扣库存。":"请先处理未匹配、重复或格式错误的药名；确认前请核对每项药品。"} 保存计算记录不会改变库存。</div>`}`;
  const btn=document.getElementById("confirmDispense");if(btn)btn.onclick=confirmDispense;
- const edit=document.getElementById("editRx");if(edit)edit.onclick=()=>document.getElementById("rxText").focus();
+ const draft=document.getElementById("saveCalcRecord");if(draft)draft.onclick=saveCalculationRecord;
+ const edit=document.getElementById("editRx");if(edit)edit.onclick=()=>document.querySelector(".rx-name")?.focus();
+}
+function clearRxInputs(){document.querySelectorAll(".rx-row").forEach(r=>{r.querySelector(".rx-name").value="";r.querySelector(".rx-grams").value="";});}
+function saveCalculationRecord(){
+ const valid=parsedLines.length>0&&parsedLines.every(p=>p.med&&!p.error&&!p.duplicate&&p.status!=="ambiguous"&&p.status!=="unmatched"&&p.status!=="error");
+ if(!valid){toast("请先完成药名匹配并处理重复项目");return;}
+ const order={id:uid("CALC"),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\n"),status:"计算记录（未扣库存）",items:parsedLines.map(p=>({medId:p.med.id,name:p.med.name,brand:p.med.brand||"",grams:num(p.grams),costPerG:num(p.cost),cost:num(p.grams)*num(p.cost),deducted:false}))};
+ state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";clearRxInputs();toast("计算记录已保存，库存未变动");
 }
 function confirmDispense(){
  // Revalidate all stocks just before changing them.
  for(const p of parsedLines){if(!p.med||p.status!=="matched"||stockFor(p.med.id)<p.grams){toast("库存已变化或有未完成项目，请重新识别");parsePrescription();return;}}
- const order={id:uid("RX"),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\\n"),items:[]};
+ const order={id:uid("RX"),date:new Date().toISOString(),text:readRxRows().map(p=>p.raw).join("\n"),status:"已调剂并扣库存",items:[]};
  for(const p of parsedLines){
   let remaining=p.grams;
   const lots=state.lots.filter(l=>l.medId===p.med.id&&num(l.remainingG)>0).sort((a,b)=>(a.expiry||"9999").localeCompare(b.expiry||"9999"));
-  for(const lot of lots){if(remaining<=0)break;const take=Math.min(remaining,num(lot.remainingG));lot.remainingG=+(num(lot.remainingG)-take).toFixed(4);remaining=+(remaining-take).toFixed(4);order.items.push({medId:p.med.id,name:p.med.name,brand:p.med.brand,grams:take,costPerG:num(lot.costPerG),cost:take*num(lot.costPerG),lotId:lot.id});state.movements.push({id:uid("MV"),date:order.date,type:"调剂出库",medId:p.med.id,name:p.med.name,grams:-take,costPerG:num(lot.costPerG),lotId:lot.id,ref:order.id});}
+  for(const lot of lots){if(remaining<=0)break;const take=Math.min(remaining,num(lot.remainingG));lot.remainingG=+(num(lot.remainingG)-take).toFixed(4);remaining=+(remaining-take).toFixed(4);order.items.push({medId:p.med.id,name:p.med.name,brand:p.med.brand,grams:take,costPerG:num(lot.costPerG),cost:take*num(lot.costPerG),lotId:lot.id,deducted:true});state.movements.push({id:uid("MV"),date:order.date,type:"调剂出库",medId:p.med.id,name:p.med.name,grams:-take,costPerG:num(lot.costPerG),lotId:lot.id,ref:order.id});}
  }
- state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";document.querySelectorAll(".rx-row").forEach(r=>{r.querySelector(".rx-name").value="";r.querySelector(".rx-grams").value="";});toast("调剂已记录，库存已扣减");
+ state.dispenseOrders.unshift(order);save();parsedLines=[];document.getElementById("parseResults").innerHTML="";clearRxInputs();toast("调剂已记录，库存已扣减");
 }
 function goPage(page){
  document.querySelectorAll("[id^='page-']").forEach(el=>el.classList.toggle("hidden",el.id!=="page-"+page));
@@ -184,13 +204,15 @@ function renderStats(){
 }
 function renderMedicines(){
  const q=cleanName(document.getElementById("medSearch").value), type=document.getElementById("typeFilter").value;
- const list=state.medicines.filter(m=>(!type||m.type===type)&&(!q||cleanName([m.name,m.pinyin,m.pinyinInitials,m.category,m.meridian,m.brand,m.pack].join(" ")).includes(q)));
- document.getElementById("medTable").innerHTML=`<div class="sub" style="margin-bottom:8px">显示 ${list.length} / ${state.medicines.length} 项。点击「编辑」补充厂牌、规格、牌价及销售价格。</div><div class="tablewrap"><table><thead><tr><th>编号</th><th>药品名称</th><th>分类</th><th>药品类别</th><th>药物归经</th><th>厂牌</th><th>规格</th><th>牌价</th><th>折扣</th><th>当前库存</th><th>操作</th></tr></thead><tbody>${list.slice(0,500).map(m=>`<tr><td>${esc(m.id)}</td><td><b>${esc(m.name)}</b></td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.category)}</td><td>${esc(m.meridian||"待填写")}</td><td>${esc(m.brand||"—")}</td><td>${esc(m.pack||"—")}</td><td>${num(m.listPrice)?money(m.listPrice):"待填写"}</td><td>${m.discount===null||m.discount===undefined?"—":num(m.discount)+"折"}</td><td>${stockFor(m.id).toFixed(2)} g</td><td><button class="soft editmed" data-id="${esc(m.id)}">编辑</button></td></tr>`).join("")}</tbody></table></div>`;
+ const list=state.medicines.filter(m=>(!type||m.type===type)&&(!q||cleanName([m.name,m.pinyin,m.pinyinInitials,m.category,m.meridian,m.effect,m.brand,m.pack,m.id].join(" ")).includes(q)));
+ document.getElementById("medTable").innerHTML=`<div class="sub" style="margin-bottom:8px">综合资料表：显示 ${list.length} / ${state.medicines.length} 项。可搜索中文、完整拼音、拼音首字母、归经、功效、厂牌或规格；横向滑动查看全部栏位。</div><div class="tablewrap"><table style="min-width:1450px"><thead><tr><th>编号</th><th>药品名称</th><th>拼音</th><th>类型</th><th>药品类别</th><th>药物归经</th><th>功效资料</th><th>厂牌</th><th>规格</th><th>净重(g)</th><th>厂家牌价</th><th>厂家折扣</th><th>进货成本/包</th><th>销售原价/g</th><th>销售折扣价/g</th><th>当前库存</th><th>操作</th></tr></thead><tbody>${list.slice(0,1000).map(m=>`<tr><td>${esc(m.id)}</td><td><b>${esc(m.name)}</b></td><td>${esc(m.pinyin||"待填写")}<div class="sub">${esc(m.pinyinInitials||"")}</div></td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.category||"待分类")}</td><td>${esc(m.meridian||"待填写")}</td><td>${esc(m.effect||"待填写")}</td><td>${esc(m.brand||"—")}</td><td>${esc(m.pack||"—")}</td><td>${num(m.netWeight)||"—"}</td><td>${num(m.listPrice)?money(m.listPrice):"待填写"}</td><td>${m.discount===null||m.discount===undefined?"—":num(m.discount)+"折"}</td><td>${num(m.cost)?money(m.cost):"待填写"}</td><td>${num(m.salePrice)?money(m.salePrice):"待填写"}</td><td>${num(m.saleDiscountPrice)?money(m.saleDiscountPrice):"待填写"}</td><td><b>${stockFor(m.id).toFixed(2)} g</b></td><td><button class="soft editmed" data-id="${esc(m.id)}">编辑</button></td></tr>`).join("")}</tbody></table></div>`;
  document.querySelectorAll(".editmed").forEach(b=>b.onclick=()=>editMedicine(b.dataset.id));
 }
 function editMedicine(id){
  const m=getMed(id);if(!m)return;
  document.getElementById("modalRoot").innerHTML=`<div class="modalback"><div class="modal"><h3>编辑药品库存品项</h3><div class="sub">${esc(m.name)} · ${esc(m.type)} · ${esc(m.id)}</div><div class="formgrid" style="margin-top:16px">
+ <div class="field wide"><label>药名拼音（可编辑）</label><input id="ePinyin" value="${esc(m.pinyin||"")}" placeholder="例如：fu ling"></div>
+ <div class="field wide"><label>拼音首字母</label><input id="ePinyinInitials" value="${esc(m.pinyinInitials||"")}" placeholder="例如：fl"></div>
  <div class="field wide"><label>药物归经</label><input id="eMeridian" value="${esc(m.meridian||"")}" placeholder="例如：肺、脾、肾；可自行编辑"></div>
  <div class="field"><label>厂牌／厂家</label><input id="eBrand" value="${esc(m.brand||"")}"></div>
  <div class="field"><label>包装规格</label><input id="ePack" value="${esc(m.pack||"")}" placeholder="例如 500g/罐"></div>
@@ -204,7 +226,7 @@ function editMedicine(id){
  </div><div class="notice" style="margin-top:12px">同一药品不同厂牌或包装规格应建立独立库存品项。本原型先为每个原始药名建立基础记录；需要多厂牌时，后续版本会支持同一药名添加多个库存品项。</div><div class="actions" style="margin-top:16px"><button class="primary" id="saveMed">保存修改</button><button class="ghost" id="closeModal">取消</button></div></div></div>`;
  document.getElementById("closeModal").onclick=()=>document.getElementById("modalRoot").innerHTML="";
  document.getElementById("saveMed").onclick=()=>{
-  m.meridian=document.getElementById("eMeridian").value.trim();m.brand=document.getElementById("eBrand").value.trim();m.pack=document.getElementById("ePack").value.trim();m.netWeight=num(document.getElementById("eWeight").value);
+  m.pinyin=document.getElementById("ePinyin").value.trim().toLowerCase();m.pinyinInitials=document.getElementById("ePinyinInitials").value.trim().toLowerCase().replace(/\s/g,"");m.meridian=document.getElementById("eMeridian").value.trim();m.brand=document.getElementById("eBrand").value.trim();m.pack=document.getElementById("ePack").value.trim();m.netWeight=num(document.getElementById("eWeight").value);
   m.listPrice=num(document.getElementById("eList").value);m.discount=num(document.getElementById("eDiscount").value);m.cost=num(document.getElementById("eCost").value);
   m.salePrice=num(document.getElementById("eSale").value);m.saleDiscountPrice=num(document.getElementById("eSaleDiscount").value);m.minStock=num(document.getElementById("eMin").value);
   save();document.getElementById("modalRoot").innerHTML="";toast("药品资料已保存");
@@ -212,10 +234,10 @@ function editMedicine(id){
 }
 document.getElementById("medSearch").oninput=renderMedicines;document.getElementById("typeFilter").onchange=renderMedicines;
 document.getElementById("addMed").onclick=()=>{
- document.getElementById("modalRoot").innerHTML=`<div class="modalback"><div class="modal"><h3>新增药品名称</h3><div class="formgrid"><div class="field wide"><label>药品名称</label><input id="nName"></div><div class="field"><label>药品类型</label><select id="nType"><option>单方</option><option>复方</option></select></div><div class="field"><label>药品类别</label><select id="nCategory">${categoryOptions()}</select><button type="button" class="ghost" id="addCategoryBtn" style="margin-top:8px;width:100%">＋新增类别</button></div></div><div class="actions" style="margin-top:16px"><button class="primary" id="saveNew">新增</button><button class="ghost" id="closeNew">取消</button></div></div></div>`;
+ document.getElementById("modalRoot").innerHTML=`<div class="modalback"><div class="modal"><h3>新增药品名称</h3><div class="formgrid"><div class="field wide"><label>药品名称</label><input id="nName"></div><div class="field"><label>药名拼音</label><input id="nPinyin" placeholder="例如：fu ling"></div><div class="field"><label>拼音首字母</label><input id="nInitials" placeholder="例如：fl"></div><div class="field"><label>药品类型</label><select id="nType"><option>单方</option><option>复方</option></select></div><div class="field"><label>药品类别</label><select id="nCategory">${categoryOptions()}</select><button type="button" class="ghost" id="addCategoryBtn" style="margin-top:8px;width:100%">＋新增类别</button></div></div><div class="actions" style="margin-top:16px"><button class="primary" id="saveNew">新增</button><button class="ghost" id="closeNew">取消</button></div></div></div>`;
  document.getElementById("closeNew").onclick=()=>document.getElementById("modalRoot").innerHTML="";
  document.getElementById("addCategoryBtn").onclick=()=>{const input=prompt("请输入新的药品类别名称");if(!input||!input.trim())return;const cat=addCategoryToState(input);document.getElementById("nCategory").innerHTML=categoryOptions(cat);toast("类别已加入列表");};
- document.getElementById("saveNew").onclick=()=>{const name=document.getElementById("nName").value.trim();if(!name){toast("请填写药品名称");return;}if(state.medicines.some(m=>cleanName(m.name)===cleanName(name))){toast("药品已存在，请编辑原药品或新增厂牌品项");return;}const category=document.getElementById("nCategory").value;if(!category){toast("请先选择药品类别；也可以新增类别");return;}state.medicines.push({id:uid("M"),name,type:document.getElementById("nType").value,category,meridian:"",brand:"",pack:"",netWeight:0,listPrice:0,discount:9,cost:0,salePrice:0,saleDiscountPrice:0,stock:0,minStock:0});save();document.getElementById("modalRoot").innerHTML="";toast("药品已新增");};
+ document.getElementById("saveNew").onclick=()=>{const name=document.getElementById("nName").value.trim();if(!name){toast("请填写药品名称");return;}if(state.medicines.some(m=>cleanName(m.name)===cleanName(name))){toast("药品已存在，请编辑原药品或新增厂牌品项");return;}const category=document.getElementById("nCategory").value;if(!category){toast("请先选择药品类别；也可以新增类别");return;}state.medicines.push({id:uid("M"),name,pinyin:document.getElementById("nPinyin").value.trim().toLowerCase(),pinyinInitials:document.getElementById("nInitials").value.trim().toLowerCase(),type:document.getElementById("nType").value,category,meridian:"",brand:"",pack:"",netWeight:0,listPrice:0,discount:9,cost:0,salePrice:0,saleDiscountPrice:0,stock:0,minStock:0});save();document.getElementById("modalRoot").innerHTML="";toast("药品已新增");};
 };
 function renderPurchaseSelect(){
  const s=document.getElementById("pMed"),search=document.getElementById("pMedSearch"),hint=document.getElementById("pMedSearchHint");if(!s)return;
@@ -241,7 +263,8 @@ document.getElementById("savePurchase").onclick=()=>{
  state.movements.unshift({id:uid("MV"),date:new Date().toISOString(),type:"进货入库",medId:med.id,name:med.name,brand,grams:weight*qty,costPerG:packCost/weight,lotId:lot.id,ref:lot.id});
  save();toast("进货已入库");goPage("history");document.getElementById("resetPurchase").click();
 };
-function renderRecent(){const root=document.getElementById("recentDispenses"),items=state.dispenseOrders.slice(0,5);root.innerHTML=items.length?`<div class="tablewrap"><table><thead><tr><th>时间</th><th>调剂单号</th><th>药品数</th><th>总克数</th><th>成本</th></tr></thead><tbody>${items.map(o=>`<tr><td>${new Date(o.date).toLocaleString("zh-TW")}</td><td>${esc(o.id)}</td><td>${o.items.length}</td><td>${o.items.reduce((s,i)=>s+num(i.grams),0).toFixed(2)} g</td><td>${money(o.items.reduce((s,i)=>s+num(i.cost),0))}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">尚无调剂记录。完成第一次调剂后，记录会显示在这里。</div>';}
+function renderRecent(){const root=document.getElementById("recentDispenses"),items=state.dispenseOrders.slice(0,10);root.innerHTML=items.length?`<div class="tablewrap"><table><thead><tr><th>时间</th><th>记录编号</th><th>状态</th><th>药品数</th><th>总克数</th><th>成本</th></tr></thead><tbody>${items.map(o=>`<tr><td>${new Date(o.date).toLocaleString("zh-TW")}</td><td>${esc(o.id)}</td><td><span class="tag ${o.status&&o.status.includes("未扣")?"warn":""}">${esc(o.status||(String(o.id).startsWith("CALC")?"计算记录（未扣库存）":"已调剂并扣库存"))}</span></td><td>${o.items.length}</td><td>${o.items.reduce((s,i)=>s+num(i.grams),0).toFixed(2)} g</td><td>${money(o.items.reduce((s,i)=>s+num(i.cost),0))}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">尚无计算或调剂记录。匹配药名后，可保存计算记录；库存足够时再确认扣库存。</div>';}
+
 function renderHistory(){
  const list=state.movements.slice().sort((a,b)=>b.date.localeCompare(a.date));
  document.getElementById("historyTable").innerHTML=list.length?`<div class="tablewrap"><table><thead><tr><th>时间</th><th>类型</th><th>药品</th><th>厂牌</th><th>数量变化</th><th>单位成本</th><th>关联编号</th></tr></thead><tbody>${list.map(m=>`<tr><td>${new Date(m.date).toLocaleString("zh-TW")}</td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.name)}</td><td>${esc(m.brand||"—")}</td><td style="color:${m.grams<0?'#a83b35':'#285744'}">${m.grams>0?"+":""}${num(m.grams).toFixed(2)} g</td><td>${money(m.costPerG)}/g</td><td>${esc(m.ref||"—")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">尚无进货或调剂异动。</div>';
