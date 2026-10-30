@@ -156,6 +156,7 @@ td{border-bottom:1px solid #e2e9e4}
 .rx-status-matched{background:#dff5e7;color:#176b50;border:1px solid #9bd7b2}
 .rx-status-short,.rx-status-unmatched,.rx-status-error{background:#ffebeb;color:#b4232d;border:1px solid #f2aaaa}
 .rx-status-setup,.rx-status-ambiguous{background:#fff1d5;color:#87530b;border:1px solid #f0cf86}
+.rx-status-price{display:block;margin-top:4px;padding:5px 8px;border-radius:7px;background:#fff0e6;color:#b54708;border:1px solid #f4b183;font-size:11px;font-weight:850;line-height:1.35}
 .rx-row.rx-state-matched .rx-name,.rx-row.rx-state-matched .rx-grams{background:#effaf2;border-color:#69bd89}
 .rx-row.rx-state-short .rx-name,.rx-row.rx-state-short .rx-grams,.rx-row.rx-state-unmatched .rx-name,.rx-row.rx-state-unmatched .rx-grams,.rx-row.rx-state-error .rx-name,.rx-row.rx-state-error .rx-grams{background:#fff1f0;border-color:#df7771}
 .rx-row.rx-state-setup .rx-name,.rx-row.rx-state-setup .rx-grams,.rx-row.rx-state-ambiguous .rx-name,.rx-row.rx-state-ambiguous .rx-grams{background:#fff8e8;border-color:#ddb65e}
@@ -433,8 +434,9 @@ function parsePrescription(){
   if(!candidates.length)return {...line,index,status:"unmatched"};
   if(candidates.length>1)return {...line,index,candidates,status:"ambiguous"};
   const med=candidates[0], stock=stockFor(med.id), cost=costFor(med.id);
+  const price=num(med.listPrice), priceLimit=med.type==="复方"?600:500, highPrice=price>priceLimit;
   const duplicate=lines.slice(0,index).some(x=>!x.error&&cleanName(x.name)===cleanName(line.name));
-  return {...line,index,med,stock,cost,dosesPerDay,days,multiplier,gramsTotal:num(line.grams)*multiplier,status:!med.brand||!med.pack||!med.netWeight?"setup":stock<num(line.grams)*multiplier?"short":"matched",duplicate};
+  return {...line,index,med,stock,cost,price,priceLimit,highPrice,dosesPerDay,days,multiplier,gramsTotal:num(line.grams)*multiplier,status:!med.brand||!med.pack||!med.netWeight?"setup":stock<num(line.grams)*multiplier?"short":"matched",duplicate};
  });
  parsedLines.forEach((p)=>{
   if(p.med){p.gramsTotal=parsedLines.filter(q=>q.med&&q.med.id===p.med.id).reduce((s,q)=>s+num(q.grams)*multiplier,0); if(p.gramsTotal>p.stock && p.status==="matched")p.status="short";}
@@ -442,11 +444,12 @@ function parsePrescription(){
  // Color the original input row so the user can identify each medicine status at a glance.
  document.querySelectorAll(".rx-row").forEach((row,i)=>{
   row.classList.remove("rx-state-matched","rx-state-short","rx-state-unmatched","rx-state-setup","rx-state-ambiguous","rx-state-error");
+  row.querySelectorAll(".rx-status-price").forEach(el=>el.remove());
   const item=parsedLines.find(p=>p.index===i);
   if(item){
    row.classList.add("rx-state-"+(item.status||"error"));
    const badge=row.querySelector(".rx-status");
-   if(badge){const labels={matched:"✓ 已匹配 · 库存足够",short:"! 库存不足",unmatched:"× 找不到药品",setup:"! 厂牌／规格待设置",ambiguous:"! 有多个匹配，请选择",error:"× 输入资料有误"};badge.textContent=labels[item.status]||"请核对";badge.className="rx-status rx-status-"+(item.status||"error");}
+   if(badge){const labels={matched:"✓ 已匹配 · 库存足够",short:"! 库存不足",unmatched:"× 找不到药品",setup:"! 厂牌／规格待设置",ambiguous:"! 有多个匹配，请选择",error:"× 输入资料有误"};badge.textContent=labels[item.status]||"请核对";badge.className="rx-status rx-status-"+(item.status||"error");if(item.highPrice){const priceNote=document.createElement("span");priceNote.className="rx-status-price";priceNote.textContent=`⚠ 价格偏高 · NT$${item.price.toLocaleString("zh-TW")}／包装（${item.med.type==="复方"?"复方":"单方"}提醒线 NT$${item.priceLimit}）`;badge.insertAdjacentElement("afterend",priceNote);} }
   }
  });
  renderParseResults();
@@ -460,7 +463,7 @@ function renderParseResults(){
  const totalCost=parsedLines.reduce((s,p)=>s+num(p.grams)*multiplier*num(p.cost),0);
  root.innerHTML=`<div class="resulttop"><div><div class="h2">识别与计算结果</div><div class="sub">单次剂量 × 每日 ${dosesPerDay} 次 × ${days} 天 = ${multiplier} 次用量；总用量 ${totalG.toFixed(2)} 克 · ${allIdentified?"药名已匹配":"仍有药名需要确认"}</div></div><div class="bigtotal">${money(totalCost)}${totalCost===0?'<div class="sub">尚无成本资料</div>':''}</div></div>
  <div class="tablewrap"><table><thead><tr><th>输入药名</th><th>匹配药品</th><th>厂牌／规格</th><th>单次剂量</th><th>疗程总用量</th><th>库存</th><th>单位成本</th><th>成本小计</th><th>状态</th></tr></thead><tbody>${parsedLines.map(p=>{
- let status=p.status==="matched"?'<span class="tag">可扣库存</span>':p.status==="short"?'<span class="tag red">库存不足</span>':p.status==="setup"?'<span class="tag warn">待设置厂牌/规格</span>':p.status==="ambiguous"?'<span class="tag warn">多个匹配，请核对</span>':p.status==="unmatched"?'<span class="tag red">未匹配</span>':'<span class="tag red">格式错误</span>';
+ let status=p.status==="matched"?'<span class="tag">可扣库存</span>':p.status==="short"?'<span class="tag red">库存不足</span>':p.status==="setup"?'<span class="tag warn">待设置厂牌/规格</span>':p.status==="ambiguous"?'<span class="tag warn">多个匹配，请核对</span>':p.status==="unmatched"?'<span class="tag red">未匹配</span>':'<span class="tag red">格式错误</span>';if(p.highPrice)status+=`<div style="margin-top:4px"><span class="price-high-flag">价格偏高 · NT$${p.price.toLocaleString("zh-TW")}／包装</span></div>`;
  return `<tr><td>${esc(p.raw)}</td><td>${esc(p.med?.name||p.name||"—")}${p.med?`<div class="sub">${esc(p.med.id)} · ${esc(p.med.pinyin||"")}</div>`:""}</td><td>${esc(p.med?(p.med.brand||"未设置")+" / "+(p.med.pack||"未设置"):"—")}</td><td>${p.grams?Number(p.grams).toFixed(2)+" g":"—"}</td><td>${p.med?`${(num(p.grams)*multiplier).toFixed(2)} g`:"—"}</td><td>${p.med?stockFor(p.med.id).toFixed(2)+" g":"—"}</td><td>${p.med&&p.cost?money(p.cost)+"/g":"待补成本"}</td><td>${p.med&&p.cost?money(num(p.grams)*multiplier*num(p.cost)):"—"}</td><td>${status}${p.duplicate?'<div class="sub">同一药名重复输入，请合并剂量</div>':""}</td></tr>`}).join("")}</tbody></table></div>
  <div class="actions" style="margin-top:14px"><button class="primary" id="confirmDispense" ${stockOk?"":"disabled"}>确认调剂并扣库存（${totalG.toFixed(2)} g）</button><button class="soft" id="saveCalcRecord" ${allIdentified?"":"disabled"}>保存计算记录（不扣库存）</button><button class="ghost" id="editRx">返回修改</button></div>
  ${stockOk?'<div class="notice" style="margin-top:10px">药品匹配、厂牌规格及疗程总用量库存均符合条件，可以确认扣库存。</div>':`<div class="notice" style="margin-top:10px">${allIdentified?"可以保存计算记录，但疗程总用量库存不足或尚未设置完整厂牌规格，因此不能扣库存。":"请先处理未匹配、重复或格式错误的药名；确认前请核对每项药品。"} 保存计算记录不会改变库存。</div>`}`;
