@@ -401,6 +401,42 @@ td{border-bottom:1px solid #e2e9e4}
 .med-cards.size-large .med-stock-only{min-height:145px;padding:20px}
 .med-cards.size-large .med-stock-only .med-group-title{font-size:20px}
 .med-cards.size-large .med-stock-summary strong{font-size:29px}
+
+/* v4.2.5：药品列表大小分层显示信息，类别颜色按类别名称稳定分配 */
+.med-group-title{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.med-title-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-weight:800}
+.category-pill{display:inline-flex;align-items:center;max-width:100%;padding:4px 9px;border-radius:999px;font-size:11px;line-height:1.35;font-weight:750;border:1px solid transparent;white-space:normal}
+.category-pill.cat-tone-0{background:#e7f2ff;color:#285b9a;border-color:#c8dcfa}
+.category-pill.cat-tone-1{background:#e8f6ec;color:#276545;border-color:#c8e8d1}
+.category-pill.cat-tone-2{background:#fff2df;color:#936018;border-color:#f0d8ad}
+.category-pill.cat-tone-3{background:#f2eaff;color:#6846a0;border-color:#dfcff7}
+.category-pill.cat-tone-4{background:#ffe9ec;color:#a43c53;border-color:#f5cbd3}
+.category-pill.cat-tone-5{background:#e3f6f5;color:#18716d;border-color:#c2e8e5}
+.category-pill.cat-tone-6{background:#f2f0e5;color:#71612a;border-color:#e4dfc2}
+.category-pill.cat-tone-7{background:#edf0f5;color:#4c5d78;border-color:#d7deea}
+@media(max-width:420px){.med-group-title{gap:6px}.category-pill{font-size:10px;padding:4px 8px}}
+
+
+/* v4.2.5：大小格采用不同信息密度；类别颜色保留 */
+.med-cards .med-stock-extra{display:none;color:var(--muted,#75847b);font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.med-cards .med-stock-extra span{display:block}
+.med-cards.size-small .med-stock-extra{display:none}
+.med-cards.size-medium .med-stock-extra-medium{display:block;font-size:13px;padding:2px 0}
+.med-cards.size-medium .med-stock-only{min-height:150px;padding:16px}
+.med-cards.size-medium .med-stock-only .med-group-title{font-size:17px}
+.med-cards.size-medium .med-stock-summary strong{font-size:25px}
+.med-cards.size-large .med-stock-extra-medium,.med-cards.size-large .med-stock-extra-large{display:block;font-size:14px;line-height:1.7;padding:2px 0}
+.med-cards.size-large .med-stock-only{min-height:210px;padding:22px;gap:14px}
+.med-cards.size-large .med-stock-only .med-group-title{font-size:21px;gap:9px}
+.med-cards.size-large .category-pill{font-size:12px;padding:5px 11px}
+.med-cards.size-large .med-stock-summary{padding-top:14px;font-size:15px}
+.med-cards.size-large .med-stock-summary strong{font-size:31px}
+@media(max-width:420px){
+ .med-cards.size-medium .med-stock-extra-medium{font-size:12px}
+ .med-cards.size-large .med-stock-extra-medium,.med-cards.size-large .med-stock-extra-large{font-size:13px}
+ .med-cards.size-large .med-stock-only{padding:17px;min-height:195px}
+}
+
 </style>
 </head>
 <body>
@@ -807,7 +843,7 @@ function renderMedicines(){
  const recentOpen=localStorage.getItem("scmed_recent_use_open")==="1"&&!q;
  const recentUseHtml=`<section class="stats-quick-card recent-quick-card ${recentOpen?"is-open":""}"><button type="button" class="stats-quick-trigger" id="toggleRecentUse" aria-expanded="${recentOpen}"><span class="stats-quick-icon">◷</span><span class="stats-quick-title"><b>近期常用药物</b><small>最近 30 天调剂 · ${recentUsed.length} 项</small></span><span class="stats-quick-action">${recentOpen?"收起":"展开"}⌄</span></button><div class="stats-quick-body ${recentOpen?"":"hidden"}">${recentUsed.length?`<div class="recent-use-chips">${recentUsed.map(x=>`<button type="button" class="recent-use-chip ${x.med.type==="复方"?"compound":"single"}" data-recent-med="${esc(x.med.id)}"><span>${esc(x.med.name)}</span><small>${x.count} 次</small></button>`).join("")}</div>`:`<div class="recent-use-empty">目前没有近期调剂记录；完成调剂后，会自动整理常用药物。</div>`}</div></section>`;
 
- const groupedCardsHtml=(()=>{const groups=new Map();list.slice(0,1000).forEach(m=>{const key=cleanName(m.name)+"|"+m.type;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(m);});return [...groups.values()].map(items=>{const first=items[0];const totalStock=items.reduce((sum,m)=>sum+stockFor(m.id),0);const typeClass=first.type==="复方"?"compound":"single";return `<section class="med-group-card med-stock-only ${typeClass}" role="button" tabindex="0" data-detail-id="${esc(first.id)}" aria-label="${esc(first.name)}，剩余库存 ${totalStock.toFixed(2)} 克，点击查看详情"><div class="med-group-head"><div class="med-group-title">${esc(first.name)} <span class="type-pill ${typeClass}">${first.type==="复方"?"复方剂":"单方药"}</span></div><div class="med-stock-summary"><span>剩余库存</span><strong>${totalStock.toFixed(2)} <small>g</small></strong></div></div></section>`;}).join("");})();
+ const groupedCardsHtml=(()=>{const groups=new Map();list.slice(0,1000).forEach(m=>{const key=cleanName(m.name)+"|"+m.type;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(m);});const categoryPalette=["cat-tone-0","cat-tone-1","cat-tone-2","cat-tone-3","cat-tone-4","cat-tone-5","cat-tone-6","cat-tone-7"];const categoryTone=name=>{const text=String(name||"未分类");let hash=0;for(let i=0;i<text.length;i++)hash=(hash*31+text.charCodeAt(i))>>>0;return categoryPalette[hash%categoryPalette.length];};return [...groups.values()].map(items=>{const first=items[0];const totalStock=items.reduce((sum,m)=>sum+stockFor(m.id),0);const typeClass=first.type==="复方"?"compound":"single";const category=first.category||"未分类";const categoryClass=categoryTone(category);return `<section class="med-group-card med-stock-only ${typeClass}" role="button" tabindex="0" data-detail-id="${esc(first.id)}" aria-label="${esc(first.name)}，${esc(category)}，剩余库存 ${totalStock.toFixed(2)} 克，点击查看详情"><div class="med-group-head"><div class="med-group-title"><div class="med-title-line">${esc(first.name)} <span class="type-pill ${typeClass}">${first.type==="复方"?"复方剂":"单方药"}</span></div><span class="category-pill ${categoryClass}">${esc(category)}</span></div><div class="med-stock-extra med-stock-extra-medium"><span>拼音：${esc(first.pinyin||"待填写")}</span><span>归经：${esc(first.meridian||"待填写")}</span></div><div class="med-stock-extra med-stock-extra-large"><span>功效：${esc(first.effect||"待填写")}</span></div><div class="med-stock-summary"><span>剩余库存</span><strong>${totalStock.toFixed(2)} <small>g</small></strong></div></div></section>`;}).join("");})();
  const singleCount=state.medicines.filter(m=>m.type==="单方").length;const compoundCount=state.medicines.filter(m=>m.type==="复方").length;const activeType=type||"";
  document.getElementById("medTable").innerHTML=`<div class="med-type-filter" role="group" aria-label="筛选单方药或复方剂"><span class="type-filter-label">药品类型：</span><button type="button" class="med-type-filter-btn ${activeType===""?"active":""}" data-med-type="">全部 <b>${state.medicines.length}</b></button><button type="button" class="med-type-filter-btn ${activeType==="单方"?"active":""}" data-med-type="单方">单方药 <b>${singleCount}</b></button><button type="button" class="med-type-filter-btn ${activeType==="复方"?"active":""}" data-med-type="复方">复方剂 <b>${compoundCount}</b></button></div><div class="stats-quick-grid ${categoryOpen||purchaseOpen||recentOpen?"has-open":""}">${categoryStatsHtml}${purchaseStatsHtml}${recentUseHtml}</div><div class="med-list-count sub">药品资料：显示 ${list.length} / ${state.medicines.length} 项${categoryFilter.value?` · 类别：${esc(categoryFilter.value)}`:""}${lowStockOnly?` <span class="low-stock-filter-pill">低库存筛选 <button type="button" id="clearLowStockFilter" aria-label="取消低库存筛选">×</button></span>`:""}</div><div class="med-display-controls"><div class="med-size-controls"><b>格子大小</b><div class="med-size-options"><button type="button" class="ghost med-size-btn ${cardSize==="small"?"active":""}" data-size="small">小格</button><button type="button" class="ghost med-size-btn ${cardSize==="medium"?"active":""}" data-size="medium">中格</button><button type="button" class="ghost med-size-btn ${cardSize==="large"?"active":""}" data-size="large">大格</button></div></div><div class="med-sort-controls"><b>排列方式</b><div class="med-sort-options"><button type="button" class="ghost med-sort-btn ${sortMode==="default"?"active":""}" data-sort="default">默认</button><button type="button" class="ghost med-sort-btn ${sortMode==="alphabet"?"active":""}" data-sort="alphabet">A–Z</button><button type="button" class="ghost med-sort-btn ${sortMode==="category"?"active":""}" data-sort="category">按类别</button><button type="button" class="ghost med-sort-btn ${sortMode==="pinyin"?"active":""}" data-sort="pinyin">拼音</button><button type="button" class="ghost med-sort-btn ${sortMode==="stock"?"active":""}" data-sort="stock">库存量</button></div></div></div><div class="med-cards size-${cardSize}">${groupedCardsHtml}</div><div class="med-desktop-table"><div class="tablewrap"><table style="min-width:1450px"><thead><tr><th>编号</th><th>药品名称</th><th>拼音</th><th>类型</th><th>药品类别</th><th>药物归经</th><th>功效资料</th><th>厂牌</th><th>规格</th><th>净重(g)</th><th>厂家牌价</th><th>厂家折扣</th><th>进货成本/包</th><th>销售原价/g</th><th>销售折扣价/g</th><th>当前库存</th><th>最近批号</th><th>最近效期</th><th>操作</th></tr></thead><tbody>${list.slice(0,1000).map(m=>{const lot=recentLotFor(m.id);return `<tr><td>${esc(m.id)}</td><td><b>${esc(m.name)}</b></td><td>${esc(m.pinyin||"待填写")}<div class="sub">${esc(m.pinyinInitials||"")}</div></td><td><span class="tag">${esc(m.type)}</span></td><td>${esc(m.category||"待分类")}</td><td>${esc(m.meridian||"待填写")}</td><td>${esc(m.effect||"待填写")}</td><td>${esc(m.brand||lot?.brand||"—")}</td><td>${esc(m.pack||lot?.pack||"—")}</td><td>${num(m.netWeight)||((lot&&num(lot.qty)>0)?(num(lot.netWeight)/num(lot.qty)).toFixed(2):"—")}</td><td>${num(m.listPrice)?money(m.listPrice):"待填写"}</td><td>${m.discount===null||m.discount===undefined?"—":num(m.discount)+"折"}</td><td>${num(m.cost)?money(m.cost):"待填写"}</td><td>${num(m.salePrice)?money(m.salePrice):"待填写"}</td><td>${num(m.saleDiscountPrice)?money(m.saleDiscountPrice):"待填写"}</td><td><b>${stockFor(m.id).toFixed(2)} g</b></td><td>${esc(lot?.lotno||"—")}</td><td>${esc(lot?.expiry||"—")}</td><td><button class="soft editmed" data-id="${esc(m.id)}">编辑</button></td></tr>`;}).join("")}</tbody></table></div></div>`;
  document.querySelectorAll(".editmed").forEach(b=>b.onclick=e=>{e.stopPropagation();editMedicine(b.dataset.id)});
