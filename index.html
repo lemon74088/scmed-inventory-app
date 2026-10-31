@@ -346,22 +346,42 @@ td{border-bottom:1px solid #e2e9e4}
 
 
 
-/* v4.2.1：厂家品项卡片缩小并排，减少药品列表纵向占用 */
-.med-group-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px;row-gap:7px}
-.med-group-card>.med-group-head{grid-column:1/-1;min-width:0}
-.med-group-card>.med-variant-row{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:5px;min-width:0;min-height:0;margin:0;padding:8px;border-radius:11px}
-.med-group-card .med-variant-main{width:100%;min-width:0}
-.med-group-card .med-variant-brand{font-size:12px;line-height:1.4;overflow-wrap:anywhere}
-.med-group-card .med-variant-sub{font-size:10px;line-height:1.4;margin-top:3px}
-.med-group-card .med-variant-side{display:flex;align-items:baseline;justify-content:space-between;gap:5px;text-align:left;white-space:normal}
-.med-group-card .med-variant-stock{font-size:12px}
-.med-group-card .med-variant-price{font-size:10px;margin:0}
-.med-group-card .med-variant-actions{gap:4px;margin-top:6px;flex-wrap:nowrap}
-.med-group-card .med-variant-actions button{flex:1;min-width:0;min-height:29px;padding:5px 4px;font-size:10px;white-space:nowrap}
-@media(max-width:390px){
- .med-group-card{column-gap:6px;padding:9px}
- .med-group-card>.med-variant-row{padding:7px}
- .med-group-card .med-variant-actions button{font-size:9px;padding:5px 2px}
+/* v4.2.2：修复药品卡片大小切换；厂家卡片保持紧凑并排 */
+.med-cards{display:block}
+.med-cards.size-small{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:start}
+.med-cards.size-medium,.med-cards.size-large{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.med-cards .med-group-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px;row-gap:7px;min-width:0}
+.med-cards .med-group-card>.med-group-head{grid-column:1/-1;min-width:0}
+.med-cards .med-group-card>.med-variant-row{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:5px;min-width:0;min-height:0;margin:0;padding:8px;border-radius:11px}
+.med-cards .med-group-card .med-variant-main{width:100%;min-width:0}
+.med-cards .med-group-card .med-variant-brand{font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.med-cards .med-group-card .med-variant-sub{font-size:10px;line-height:1.4;margin-top:3px}
+.med-cards .med-group-card .med-variant-side{display:flex;align-items:baseline;justify-content:space-between;gap:5px;text-align:left;white-space:normal}
+.med-cards .med-group-card .med-variant-stock{font-size:12px}
+.med-cards .med-group-card .med-variant-price{font-size:10px;margin:0}
+.med-cards .med-group-card .med-variant-actions{gap:4px;margin-top:6px;flex-wrap:nowrap}
+.med-cards .med-group-card .med-variant-actions button{flex:1;min-width:0;min-height:29px;padding:5px 4px;font-size:10px;white-space:nowrap}
+/* 小格：药品主卡两列；中格：药品主卡单列；大格：加大留白与文字 */
+.med-cards.size-small .med-group-card{padding:9px;border-radius:14px;gap:6px}
+.med-cards.size-small .med-group-title{font-size:13px;line-height:1.35}
+.med-cards.size-small .med-group-meta{font-size:10px;line-height:1.45}
+.med-cards.size-small .med-group-card>.med-variant-row{padding:7px}
+.med-cards.size-medium .med-group-card{padding:13px;border-radius:17px;gap:8px}
+.med-cards.size-medium .med-group-title{font-size:16px}
+.med-cards.size-medium .med-group-meta{font-size:12px}
+.med-cards.size-large .med-group-card{padding:17px;border-radius:19px;gap:10px}
+.med-cards.size-large .med-group-title{font-size:19px}
+.med-cards.size-large .med-group-meta{font-size:14px;line-height:1.7}
+.med-cards.size-large .med-group-card>.med-variant-row{padding:12px}
+.med-cards.size-large .med-group-card .med-variant-brand{font-size:14px}
+.med-cards.size-large .med-group-card .med-variant-sub{font-size:12px}
+.med-cards.size-large .med-group-card .med-variant-stock{font-size:14px}
+@media(max-width:420px){
+ .med-cards.size-small{gap:7px}
+ .med-cards.size-small .med-group-card{padding:7px;column-gap:5px}
+ .med-cards.size-small .med-group-card>.med-variant-row{padding:6px}
+ .med-cards.size-small .med-group-card .med-variant-actions button{font-size:9px;padding:5px 2px}
+ .med-cards.size-medium .med-group-card,.med-cards.size-large .med-group-card{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:7px}
 }
 
 </style>
