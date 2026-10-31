@@ -607,6 +607,7 @@ function editMedicine(id){
  document.getElementById("modalRoot").innerHTML=`<div class="modalback"><div class="modal"><h3>编辑药品库存品项</h3><div class="sub">${esc(m.name)} · ${esc(m.type)} · ${esc(m.id)}</div><div class="formgrid" style="margin-top:16px">
  <div class="field wide"><label>药名拼音（可编辑）</label><input id="ePinyin" value="${esc(m.pinyin||"")}" placeholder="例如：fu ling"></div>
  <div class="field wide"><label>拼音首字母</label><input id="ePinyinInitials" value="${esc(m.pinyinInitials||"")}" placeholder="例如：fl"></div>
+ <div class="field wide"><label>药品类别（可修改）</label><select id="eCategory">${categoryOptions(m.category||"",m.type)}</select><button type="button" class="ghost" id="editAddCategory" style="margin-top:8px;width:100%">＋新增${m.type==="单方"?"单方药":"复方剂"}类别</button></div>
  <div class="field wide"><label>药物归经</label><input id="eMeridian" value="${esc(m.meridian||"")}" placeholder="例如：肺、脾、肾；可自行编辑"></div>
  <div class="field"><label>厂牌／厂家</label><input id="eBrand" value="${esc(m.brand||"")}"></div>
  <div class="field"><label>包装规格</label><input id="ePack" value="${esc(m.pack||"")}" placeholder="例如 罐"></div>
@@ -620,13 +621,14 @@ function editMedicine(id){
  <div class="field wide"><label>目前库存量（克，可直接盘点修改）</label><input id="eCurrentStock" type="number" min="0" step=".01" value="${stockFor(m.id).toFixed(2)}"><small class="sub">目前批次合计：${stockFor(m.id).toFixed(2)} g。修改后会自动产生「库存盘点调整」记录，不会改动原始进货历史。</small></div>
  </div><div class="notice" style="margin-top:12px">药品主档会保存厂牌、规格、净重与价格；批号和效期属于每一批进货，因此在资料卡中显示最近一批资料。若同一药名有不同厂牌或规格，请分别建立独立库存品项，避免混用库存。直接修改目前库存会留下盘点调整记录：增加库存会建立调整批次；减少库存会从现有批次扣减。</div><div class="actions" style="margin-top:16px"><button class="primary" id="saveMed">保存修改</button><button class="ghost" id="closeModal">取消</button></div></div></div>`;
  document.getElementById("closeModal").onclick=()=>document.getElementById("modalRoot").innerHTML="";
+ document.getElementById("editAddCategory").onclick=()=>{const type=m.type;const label=type==="单方"?"单方药":"复方剂";const input=prompt(`请输入新的${label}类别名称`);if(!input||!input.trim())return;const cat=addCategoryToState(input,type);document.getElementById("eCategory").innerHTML=categoryOptions(cat,type);document.getElementById("eCategory").value=cat;toast(`${label}类别已加入列表`);};
  document.getElementById("saveMed").onclick=()=>{
   const targetRaw=document.getElementById("eCurrentStock").value.trim();
   const targetStock=Number(targetRaw);
   if(targetRaw===""||!Number.isFinite(targetStock)||targetStock<0){toast("目前库存量必须是 0 或以上的数字");return;}
   const currentStock=stockFor(m.id);
   const delta=+(targetStock-currentStock).toFixed(4);
-  m.pinyin=document.getElementById("ePinyin").value.trim().toLowerCase();m.pinyinInitials=document.getElementById("ePinyinInitials").value.trim().toLowerCase().replace(/\s/g,"");m.meridian=document.getElementById("eMeridian").value.trim();m.brand=document.getElementById("eBrand").value.trim();m.pack=document.getElementById("ePack").value.trim();m.netWeight=num(document.getElementById("eWeight").value);
+  m.category=document.getElementById("eCategory").value;m.pinyin=document.getElementById("ePinyin").value.trim().toLowerCase();m.pinyinInitials=document.getElementById("ePinyinInitials").value.trim().toLowerCase().replace(/\s/g,"");m.meridian=document.getElementById("eMeridian").value.trim();m.brand=document.getElementById("eBrand").value.trim();m.pack=document.getElementById("ePack").value.trim();m.netWeight=num(document.getElementById("eWeight").value);
   m.listPrice=num(document.getElementById("eList").value);m.discount=num(document.getElementById("eDiscount").value);m.cost=num(document.getElementById("eCost").value);
   m.salePrice=num(document.getElementById("eSale").value);m.saleDiscountPrice=num(document.getElementById("eSaleDiscount").value);m.minStock=document.getElementById("eMin").value.trim()===""?15:num(document.getElementById("eMin").value);
   if(Math.abs(delta)>=0.005){
