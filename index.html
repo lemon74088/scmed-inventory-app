@@ -528,6 +528,11 @@ td{border-bottom:1px solid #e2e9e4}
   <div class="notice" style="margin-top:14px" id="purchaseCalc">填写牌价与包装规格后，系统会预估进货成本。未填写牌价时不会虚构成本。</div>
   <div class="actions" style="margin-top:14px"><button class="primary" id="savePurchase">确认入库</button><button class="ghost" id="resetPurchase">清空表单</button></div>
  </div>
+ <div class="panel">
+  <div class="panelhead"><div><h2 class="h2">厂牌价目表</h2><div class="sub" id="priceBookSummary">依进货记录整理各家厂商的价格</div></div></div>
+  <input id="priceBookSearch" class="search" placeholder="搜索药名或厂牌，例如 当归 / 港香兰" autocomplete="off">
+  <div id="priceBook" class="tablewrap" style="margin-top:10px"></div>
+ </div>
 </section>
 <section id="page-history" class="hidden">
  <div class="panel"><div class="panelhead"><div><h2 class="h2">库存异动记录</h2><div class="sub">进货与调剂确认记录；进货记录可删除（仅限未被使用的整批库存）。此版本保存在当前浏览器。</div></div><button class="ghost" id="exportHistory">导出 CSV</button></div><div id="historyTable"></div></div>
@@ -535,7 +540,7 @@ td{border-bottom:1px solid #e2e9e4}
 <section id="page-settings" class="hidden">
  <div class="panel"><div class="panelhead"><div><h2 class="h2">资料备份与设置</h2><div class="sub">先保存一份资料备份，再进行大量药品或库存录入。</div></div></div>
   <div class="notice">目前这个 HTML 是可操作的第一版原型，数据保存于当前浏览器。本机资料不会自动出现在其他设备。要实现 iPhone 与电脑同步，下一步需要建立 Supabase 云端数据库、登入权限与安全规则。</div>
-  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v4.5：新增正体／简体显示切换（右上角按钮，预设正体，选择会记在本机；也可用 ?lang=hans 强制简体）。转换改为显示层处理，资料层永不改写，输入框不再被强制转字。效能：移除全站逐字监听，改为渲染后整批转换并加字串快取；药名搜寻加入 220ms 防抖。安全：本机储存写满时会明确提示且不再静默失败；解析失败时先保留原始资料档。其他：Esc 可关闭弹出视窗。更新日志 v4.4：初始化药品主档扩充为 322 笔，补上厂牌、包装规格与每包净重、厂家牌价与折后成本、药物归经与功效、主治与厂商产品编号；统一厂牌写法（港香兰、仙丰）、修正两笔药名错字、清理 20 笔复方归经误填与拼音错字。本次只更新预设资料，不写入库存、批次或调剂记录。更新日志 v4.3：整理手机端药品卡片信息层级，强化类别与剩余克数辨识；进货页面强化区块边界与成本预估视觉区分；保留原有资料结构、库存批次、调剂、备份与恢复功能。</b><br><b>更新日志 v4.1.3：手机首页统计卡片改为名称与数字水平排列，隐藏说明文字并缩小上下留白；电脑维持四栏宽屏布局。v4.0.1：备份档名改为「中药进销备份-年月日-时分秒.json」，每次备份使用手机本地时间，降低同日多次备份覆盖风险；初始化前备份也采用独立时间档名。更新日志 v37：同名药品厂家价格比较新增超额价格橙色整行提醒，单方超过 NT$500／包装、复方超过 NT$600／包装。更新日志 v35：调剂输入行依匹配与库存状态显示绿色／黄色／红色；进货价格提醒依药品类型识别单方 NT$500、复方 NT$600。更新日志 v25：药品资料编辑窗口新增目前库存量直接盘点调整，并自动写入库存异动记录。更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
+  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v4.5：新增正体／简体显示切换（右上角按钮，预设正体，选择会记在本机；也可用 ?lang=hans 强制简体）。转换改为显示层处理，资料层永不改写，输入框不再被强制转字。效能：移除全站逐字监听，改为渲染后整批转换并加字串快取；药名搜寻加入 220ms 防抖。安全：本机储存写满时会明确提示且不再静默失败；解析失败时先保留原始资料档。进货页新增「厂牌价目表」：依进货记录列出各厂牌牌价、实付成本、每克单价与涨跌幅度，并汇总本月进货金额。其他：Esc 可关闭弹出视窗。更新日志 v4.4：初始化药品主档扩充为 322 笔，补上厂牌、包装规格与每包净重、厂家牌价与折后成本、药物归经与功效、主治与厂商产品编号；统一厂牌写法（港香兰、仙丰）、修正两笔药名错字、清理 20 笔复方归经误填与拼音错字。本次只更新预设资料，不写入库存、批次或调剂记录。更新日志 v4.3：整理手机端药品卡片信息层级，强化类别与剩余克数辨识；进货页面强化区块边界与成本预估视觉区分；保留原有资料结构、库存批次、调剂、备份与恢复功能。</b><br><b>更新日志 v4.1.3：手机首页统计卡片改为名称与数字水平排列，隐藏说明文字并缩小上下留白；电脑维持四栏宽屏布局。v4.0.1：备份档名改为「中药进销备份-年月日-时分秒.json」，每次备份使用手机本地时间，降低同日多次备份覆盖风险；初始化前备份也采用独立时间档名。更新日志 v37：同名药品厂家价格比较新增超额价格橙色整行提醒，单方超过 NT$500／包装、复方超过 NT$600／包装。更新日志 v35：调剂输入行依匹配与库存状态显示绿色／黄色／红色；进货价格提醒依药品类型识别单方 NT$500、复方 NT$600。更新日志 v25：药品资料编辑窗口新增目前库存量直接盘点调整，并自动写入库存异动记录。更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
   <div class="panel" style="margin-top:14px;border:1px solid #d9e2dc"><div class="panelhead"><div><h2 class="h2">库存来源检查</h2><div class="sub">逐批检查目前计算出库存总克数的来源；这里显示的是本机保存的库存批次。</div></div><button class="ghost" id="exportLots">导出库存明细</button></div><div id="lotsAudit"></div></div>
   <div class="field" style="margin-top:14px"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始药品清单不代表真实库存；新建资料时库存应为 0，需实际盘点并录入后才有库存。</textarea></div>
   <div class="notice" style="margin-top:14px"><b>库存初始化说明：</b>此操作会先下载一份当前资料备份，再要求二次确认；确认后将库存归零，并清除本机进货、调剂及异动记录。所有药品主档及其中已编辑的厂牌、规格、价格等资料会保留。请先确认备份文件已保存。</div>
@@ -843,6 +848,30 @@ document.getElementById("parsePasteBtn").onclick=()=>{
 document.getElementById("addRxRow").onclick=()=>addRxRow();
 for(let i=0;i<5;i++)addRxRow();
 resetRecordNo();
+function renderPriceBook(){
+ const box=document.getElementById("priceBook");if(!box)return;
+ const q=cleanName((document.getElementById("priceBookSearch")||{}).value||"");
+ const groups=new Map();
+ const keyOf=p=>[cleanName(p.name),String(p.brand||"").trim(),String(p.pack||"").trim(),num(p.weight)].join("|");
+ for(const p of state.purchases){const k=keyOf(p);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(p);}
+ const entries=[];
+ for(const ps of groups.values()){
+  ps.sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+  const last=ps[0],prev=ps[1];
+  const price=num(last.price),cost=num(last.packCost),weight=num(last.weight);
+  const delta=prev&&num(prev.price)>0?(price-num(prev.price))/num(prev.price)*100:null;
+  entries.push({name:last.name,brand:last.brand||"",pack:last.pack||"",weight,price,packCost:cost,perG:weight>0?cost/weight:0,discount:num(last.discount),date:String(last.date||"").slice(0,10),count:ps.length,delta});
+ }
+ const show=entries.filter(e=>!q||cleanName(e.name).includes(q)||cleanName(e.brand).includes(q));
+ show.sort((a,b)=>String(a.name).localeCompare(String(b.name),"zh-Hans")||String(a.brand).localeCompare(String(b.brand),"zh-Hans"));
+ const ym=new Date().toISOString().slice(0,7);
+ const month=state.purchases.filter(p=>String(p.date||"").slice(0,7)===ym);
+ const monthTotal=month.reduce((sum,p)=>sum+num(p.totalCost),0);
+ const summary=document.getElementById("priceBookSummary");
+ if(summary)summary.textContent=`本月进货 ${money(monthTotal)}（${month.length} 笔）・${show.length} 个厂牌规格 / ${new Set(show.map(e=>cleanName(e.name))).size} 个药名`;
+ if(!show.length){box.innerHTML=`<div class="empty">${state.purchases.length?"没有符合的价目":"还没有进货记录。完成一次进货后，这里会自动建立各家厂商的价目"}</div>`;return;}
+ box.innerHTML=`<table><colgroup><col style="width:21%"><col style="width:15%"><col style="width:15%"><col style="width:14%"><col style="width:12%"><col style="width:10%"><col style="width:13%"></colgroup><thead><tr><th>药名</th><th>厂牌</th><th>规格</th><th>牌价／包</th><th>实付／包</th><th>每克</th><th>最近进货</th></tr></thead><tbody>${show.map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.brand||"未填厂牌")}</td><td>${esc(e.pack||"")}${e.weight?` ${e.weight}g`:""}</td><td>${e.price?money(e.price):"—"}${e.delta===null?"":` <span class="tag ${e.delta>0?"red":""}">${e.delta>0?"▲":"▼"}${Math.abs(e.delta).toFixed(1)}%</span>`}</td><td>${e.packCost?money(e.packCost):"—"}<div class="sub">${e.discount?e.discount+" 折":""}</div></td><td>${e.perG?money(e.perG):"—"}</td><td>${esc(e.date||"—")}<div class="sub">${e.count} 笔</div></td></tr>`).join("")}</tbody></table>`;
+}
 function renderStats(){
  document.getElementById("statMeds").textContent=state.medicines.length;
  document.getElementById("statStockItems").textContent=state.medicines.filter(m=>m.brand&&m.pack&&num(m.netWeight)>0).length;
@@ -1153,7 +1182,7 @@ function renderLotsAudit(){
  const total=lots.reduce((sum,l)=>sum+num(l.remainingG),0);
  root.innerHTML=lots.length?`<div class="notice" style="margin-bottom:10px">当前批次 ${lots.length} 笔；剩余库存合计 <b>${total.toLocaleString("zh-TW",{maximumFractionDigits:2})} g</b>。若这些批次是测试数据，可先导出明细并备份，再使用下方「初始化库存为 0」。</div><div class="tablewrap"><table><thead><tr><th>进货日期</th><th>药品</th><th>厂牌</th><th>规格</th><th>批号</th><th>原始净重</th><th>剩余克数</th><th>效期</th><th>批次来源编号</th></tr></thead><tbody>${lots.map(l=>`<tr><td>${esc(l.createdAt?new Date(l.createdAt).toLocaleDateString("zh-TW"):"—")}</td><td>${esc(l.name||getMed(l.medId)?.name||"未知药品")}</td><td>${esc(l.brand||"—")}</td><td>${esc(l.pack||"—")}</td><td>${esc(l.lotno||"—")}</td><td>${num(l.netWeight).toFixed(2)} g</td><td><b>${num(l.remainingG).toFixed(2)} g</b></td><td>${esc(l.expiry||"—")}</td><td>${esc(l.id||"—")}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">目前没有库存批次，库存总克数应为 0 g。若首页仍显示非零，请重新载入网页后再检查。</div>`;
 }
-function renderAll(){renderStats();renderMedicines();renderPurchaseSelect();renderRecent();renderHistory();renderLotsAudit();purchaseEstimate();}
+function renderAll(){renderStats();renderMedicines();renderPurchaseSelect();renderRecent();renderHistory();renderLotsAudit();purchaseEstimate();renderPriceBook();}
 function openLowStockList(){
  localStorage.setItem("scmed_low_stock_filter","1");
  document.getElementById("medSearch").value="";
@@ -1246,6 +1275,9 @@ langObserver.observe(document.body,{subtree:true,childList:true});
 renderAll();
 fillPurchaseDefaults();
 showBackupStatus();
+
+const pbSearch=document.getElementById("priceBookSearch");
+if(pbSearch)pbSearch.oninput=debounce(renderPriceBook,180);
 
 // v4.5：語系切換與全域 Esc 關閉
 const langToggleBtn=document.getElementById("langToggle");
