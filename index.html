@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#23483c">
-<title>科学中药进销存 v4.8</title>
+<title>科学中药进销存 v4.9</title>
 <style>
 :root{--bg:#f4f6f2;--card:#fff;--ink:#1f2d27;--muted:#718078;--line:#e1e8e2;--green:#285744;--green2:#e5f0e8;--amber:#fff1d8;--red:#a83b35;--shadow:0 6px 24px #203c2c0a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--green);color:white}.soft{background:var(--green2);color:var(--green)}.ghost{background:#f0f3f0;color:var(--ink);border:1px solid var(--line)}.danger{background:#fff0ee;color:var(--red)}.app{max-width:1180px;margin:auto;padding:18px 16px 100px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:8px 0 22px}.brand{display:flex;gap:12px;align-items:center}.logo{width:46px;height:46px;background:var(--green);color:white;border-radius:15px;display:grid;place-items:center;font-size:23px}.eyebrow{font-size:12px;color:var(--muted);letter-spacing:.08em}.title{font-size:23px;font-weight:800;letter-spacing:-.03em;margin:2px 0}.sub{font-size:13px;color:var(--muted)}.syncpill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:12px;color:var(--muted);white-space:nowrap}.syncdot{display:inline-block;width:7px;height:7px;background:#d49b36;border-radius:50%;margin-right:6px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat,.panel,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.stat{padding:16px}.statlabel{font-size:12px;color:var(--muted)}.statnum{font-size:26px;font-weight:800;margin:7px 0 2px}.statnote{font-size:12px;color:var(--muted)}.tabs{display:flex;gap:8px;overflow:auto;padding:4px 0 14px;margin-bottom:4px}.tab{background:transparent;color:var(--muted);white-space:nowrap}.tab.active{background:var(--green);color:#fff}.panel{padding:20px;margin-bottom:16px}.panelhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}.h2{font-size:18px;font-weight:800;margin:0 0 4px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{font-size:12px;font-weight:700;color:#56655d}.field input,.field select,.field textarea,.search{width:100%;border:1px solid #dbe3dc;background:#fff;border-radius:11px;padding:11px 12px;outline:none;color:var(--ink)}.field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:#6a9c7e;box-shadow:0 0 0 3px #e3f1e7}.formgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.wide{grid-column:span 2}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:720px;background:#fff}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}th{font-size:11px;text-transform:none;color:var(--muted);background:#f8faf8;position:sticky;top:0}tr:last-child td{border-bottom:0}.tag{display:inline-flex;padding:4px 8px;border-radius:99px;font-size:11px;background:#eef2ee;color:#506056}.tag.warn{background:var(--amber);color:#875b16}.timing-choice.active{background:var(--green);color:#fff}.price-alert{background:var(--amber);color:#875b16;border-radius:8px;padding:6px 8px;font-weight:700}.price-ok{color:var(--muted)}.tag.red{background:#fff0ee;color:var(--red)}.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}.textarea{min-height:150px;resize:vertical;line-height:1.8}.rx-grid-head,.rx-row{display:grid;grid-template-columns:26px minmax(0,1fr) minmax(100px,.42fr) 38px;gap:9px;align-items:center}.rx-grid-head{font-size:12px;font-weight:700;color:#56655d;margin:8px 0} .rx-row{margin-bottom:8px}.rx-number-head{color:var(--muted);text-align:center}.rx-row-number{display:flex;align-items:center;justify-content:center;align-self:start;margin-top:12px;width:26px;height:26px;min-width:26px;border-radius:50%;background:#28634b;color:#fff;font-size:13px;font-weight:900;box-shadow:0 1px 3px #203c2c22}.rx-row-number:empty{display:none}.rx-row.rx-state-matched .rx-name,.rx-row.rx-state-matched .rx-grams{border-color:#8fc6a2;background:#eff9f1;color:#245d40}.rx-row.rx-state-short .rx-name,.rx-row.rx-state-short .rx-grams,.rx-row.rx-state-unmatched .rx-name,.rx-row.rx-state-unmatched .rx-grams,.rx-row.rx-state-error .rx-name,.rx-row.rx-state-error .rx-grams{border-color:#e7a09b;background:#fff1f0;color:#9f302b}.rx-row.rx-state-setup .rx-name,.rx-row.rx-state-setup .rx-grams,.rx-row.rx-state-ambiguous .rx-name,.rx-row.rx-state-ambiguous .rx-grams{border-color:#e8c477;background:#fff8e8;color:#805713}.rx-row.rx-state-matched:before,.rx-row.rx-state-short:before,.rx-row.rx-state-unmatched:before,.rx-row.rx-state-setup:before,.rx-row.rx-state-ambiguous:before{content:"";display:block;grid-column:1/-1;height:3px;border-radius:99px;margin-bottom:-3px}.rx-row.rx-state-matched:before{background:#55a978}.rx-row.rx-state-short:before,.rx-row.rx-state-unmatched:before{background:#d95c55}.rx-row.rx-state-setup:before,.rx-row.rx-state-ambiguous:before{background:#d7a33e}.rx-name-wrap{position:relative;min-width:0}.rx-row input{width:100%;min-width:0;border:1px solid #dbe3dc;background:#fff;border-radius:11px;padding:11px 12px;outline:none}.rx-row input:focus{border-color:#6a9c7e;box-shadow:0 0 0 3px #e3f1e7}.rx-suggestions{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:8;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px #203c2c20;max-height:240px;overflow:auto}.rx-suggestion{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;background:#fff;border-radius:0;border-bottom:1px solid var(--line);padding:10px;font-size:13px}.rx-suggestion:last-child{border-bottom:0}.rx-suggestion small{display:block;color:var(--muted);font-size:11px;font-weight:500}.rx-suggestion .stock-label{white-space:nowrap;color:var(--green);font-weight:750}.rx-suggestion .stock-label.none{color:var(--red)}.rx-row .remove-row{padding:8px 0;background:#fff0ee;color:#a83b35;border-radius:9px}.rx-row .remove-row:disabled{opacity:.25}@media(max-width:420px){.rx-grid-head,.rx-row{grid-template-columns:22px minmax(0,1fr) 96px 34px;gap:6px}.rx-row input{padding:10px 8px;font-size:14px}}.notice{background:#f5f8f5;border:1px solid var(--line);border-radius:12px;padding:12px;color:#5e6c63;font-size:12px;line-height:1.65}.actions{display:flex;gap:8px;flex-wrap:wrap}.resulttop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 10px}.bigtotal{font-size:20px;font-weight:800}.dispense-record-list{display:grid;gap:10px}.dispense-record{border:1px solid var(--line);border-radius:14px;background:#fff;padding:13px}.dispense-record-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.dispense-record-top>b{overflow-wrap:anywhere}.dispense-record-meta{font-size:12px;color:var(--muted);margin:7px 0}.dispense-record-stats{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0 12px}.dispense-record-stats b{color:var(--ink)}.dispense-record .viewDispense{width:100%}.hidden{display:none!important}.modalback{position:fixed;inset:0;background:#10271db8;display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.modal h3{margin-top:0}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#213d30;color:#fff;padding:12px 18px;border-radius:12px;z-index:20;box-shadow:var(--shadow);max-width:90vw;font-size:13px}.bottomnav{display:none}.med-cards{display:none}.med-card{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fff;margin-top:10px}.med-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.med-card-name{font-size:16px;font-weight:800}.med-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.med-card-item{background:#f7f9f7;border-radius:9px;padding:8px;min-width:0}.med-card-label{font-size:11px;color:var(--muted);margin-bottom:3px}.med-card-value{font-size:13px;font-weight:650;overflow-wrap:anywhere}.med-card-actions{margin-top:10px;display:flex;gap:8px}.med-card-actions button{flex:1}.med-desktop-table{display:block}.med-size-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}.med-size-controls button{padding:7px 11px;font-size:12px}.med-size-controls button.active{background:var(--green);color:#fff}.med-card{cursor:pointer;transition:padding .15s ease,box-shadow .15s ease}.med-card:focus{outline:3px solid #a8cbb2}.med-card:hover{box-shadow:0 5px 18px #203c2c12}.med-cards.size-small{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.med-cards.size-small .med-card{padding:9px;margin-top:8px}.med-cards.size-small .med-card-grid{grid-template-columns:1fr;gap:6px}.med-cards.size-small .med-card-item{padding:6px}.med-cards.size-small .med-card-value{font-size:12px}.med-cards.size-small .med-card-name{font-size:14px}.med-cards.size-small .med-card-actions{flex-direction:column}.med-cards.size-large .med-card{padding:18px}.med-cards.size-large .med-card-name{font-size:20px}.med-cards.size-large .med-card-item{padding:12px}.med-cards.size-large .med-card-value{font-size:15px}.med-card-hint{font-size:11px;color:var(--muted);margin-top:8px}@media(max-width:420px){.med-cards.size-small .med-card-head{display:block}.med-cards.size-small .med-card-head .tag{margin-top:6px}.med-cards.size-small .med-card-actions button{font-size:11px;padding:8px 5px}}
@@ -471,6 +471,11 @@ td{border-bottom:1px solid #e2e9e4}
 .plan-total-right{text-align:right;white-space:nowrap}
 .plan-total-right b{font-size:19px;font-weight:850;color:#1f6b4e;letter-spacing:-.01em}
 .plan-total-right small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.dd-in{width:72px;padding:6px 8px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:13px;text-align:right;background:#fff}
+.dd-in:focus{outline:none;border-color:#2f8f68;box-shadow:0 0 0 3px rgba(47,143,104,.13)}
+.dd-days{width:64px}
+.dd-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+.dd-total{font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -572,7 +577,7 @@ td{border-bottom:1px solid #e2e9e4}
 <section id="page-settings" class="hidden">
  <div class="panel"><div class="panelhead"><div><h2 class="h2">资料备份与设置</h2><div class="sub">先保存一份资料备份，再进行大量药品或库存录入。</div></div></div>
   <div class="notice">目前这个 HTML 是可操作的第一版原型，数据保存于当前浏览器。本机资料不会自动出现在其他设备。要实现 iPhone 与电脑同步，下一步需要建立 Supabase 云端数据库、登入权限与安全规则。</div>
-  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v4.5：新增正体／简体显示切换（右上角按钮，预设正体，选择会记在本机；也可用 ?lang=hans 强制简体）。转换改为显示层处理，资料层永不改写，输入框不再被强制转字。效能：移除全站逐字监听，改为渲染后整批转换并加字串快取；药名搜寻加入 220ms 防抖。安全：本机储存写满时会明确提示且不再静默失败；解析失败时先保留原始资料档。预计进货清单顶部新增预估费用合计（待采购项数与包数、牌价×折扣×包数、已采购金额；无牌价项会注明未计入）。繁体用字修正：折扣／扣库存／分布／板蓝根等不再被改成摺、釦、佈、闆。最近调剂每笔记录新增「复制到处方」与「复制文字」：一键把该次药名与单次剂量填回输入行并还原服用时段／天数，或复制「药名 克数」文字；浏览器无法写入剪贴板时自动填入贴上框。新增「预计进货清单」页：搜索加入品项、记录预计包数与备注、勾选已采购、一键带入进货表单，并可一次带入全部低库存药品；近期常用药物显示数提高到 20 项并依次数由高到低排序。进货页新增「厂牌价目表」：依进货记录列出各厂牌牌价、实付成本、每克单价与涨跌幅度，并汇总本月进货金额。其他：Esc 可关闭弹出视窗。更新日志 v4.4：初始化药品主档扩充为 322 笔，补上厂牌、包装规格与每包净重、厂家牌价与折后成本、药物归经与功效、主治与厂商产品编号；统一厂牌写法（港香兰、仙丰）、修正两笔药名错字、清理 20 笔复方归经误填与拼音错字。本次只更新预设资料，不写入库存、批次或调剂记录。更新日志 v4.3：整理手机端药品卡片信息层级，强化类别与剩余克数辨识；进货页面强化区块边界与成本预估视觉区分；保留原有资料结构、库存批次、调剂、备份与恢复功能。</b><br><b>更新日志 v4.1.3：手机首页统计卡片改为名称与数字水平排列，隐藏说明文字并缩小上下留白；电脑维持四栏宽屏布局。v4.0.1：备份档名改为「中药进销备份-年月日-时分秒.json」，每次备份使用手机本地时间，降低同日多次备份覆盖风险；初始化前备份也采用独立时间档名。更新日志 v37：同名药品厂家价格比较新增超额价格橙色整行提醒，单方超过 NT$500／包装、复方超过 NT$600／包装。更新日志 v35：调剂输入行依匹配与库存状态显示绿色／黄色／红色；进货价格提醒依药品类型识别单方 NT$500、复方 NT$600。更新日志 v25：药品资料编辑窗口新增目前库存量直接盘点调整，并自动写入库存异动记录。更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
+  <div class="actions" style="margin:14px 0"><button class="primary" id="exportJson">一键备份全部资料</button><button class="ghost" id="exportCsv">另存药品 CSV</button><label class="ghost" style="display:inline-flex;align-items:center;cursor:pointer">选择备份档恢复<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label></div><div class="notice" style="margin-bottom:12px"><b>更新日志 v4.5：新增正体／简体显示切换（右上角按钮，预设正体，选择会记在本机；也可用 ?lang=hans 强制简体）。转换改为显示层处理，资料层永不改写，输入框不再被强制转字。效能：移除全站逐字监听，改为渲染后整批转换并加字串快取；药名搜寻加入 220ms 防抖。安全：本机储存写满时会明确提示且不再静默失败；解析失败时先保留原始资料档。最近调剂「本次明细」改为可编辑：单次剂量、每日次数、用药天数可直接调整、药味可移除，储存后重算疗程克数与成本并同步补扣／退回库存（库存不足会挡下并提示）。预计进货清单顶部新增预估费用合计（待采购项数与包数、牌价×折扣×包数、已采购金额；无牌价项会注明未计入）。繁体用字修正：折扣／扣库存／分布／板蓝根等不再被改成摺、釦、佈、闆。最近调剂每笔记录新增「复制到处方」与「复制文字」：一键把该次药名与单次剂量填回输入行并还原服用时段／天数，或复制「药名 克数」文字；浏览器无法写入剪贴板时自动填入贴上框。新增「预计进货清单」页：搜索加入品项、记录预计包数与备注、勾选已采购、一键带入进货表单，并可一次带入全部低库存药品；近期常用药物显示数提高到 20 项并依次数由高到低排序。进货页新增「厂牌价目表」：依进货记录列出各厂牌牌价、实付成本、每克单价与涨跌幅度，并汇总本月进货金额。其他：Esc 可关闭弹出视窗。更新日志 v4.4：初始化药品主档扩充为 322 笔，补上厂牌、包装规格与每包净重、厂家牌价与折后成本、药物归经与功效、主治与厂商产品编号；统一厂牌写法（港香兰、仙丰）、修正两笔药名错字、清理 20 笔复方归经误填与拼音错字。本次只更新预设资料，不写入库存、批次或调剂记录。更新日志 v4.3：整理手机端药品卡片信息层级，强化类别与剩余克数辨识；进货页面强化区块边界与成本预估视觉区分；保留原有资料结构、库存批次、调剂、备份与恢复功能。</b><br><b>更新日志 v4.1.3：手机首页统计卡片改为名称与数字水平排列，隐藏说明文字并缩小上下留白；电脑维持四栏宽屏布局。v4.0.1：备份档名改为「中药进销备份-年月日-时分秒.json」，每次备份使用手机本地时间，降低同日多次备份覆盖风险；初始化前备份也采用独立时间档名。更新日志 v37：同名药品厂家价格比较新增超额价格橙色整行提醒，单方超过 NT$500／包装、复方超过 NT$600／包装。更新日志 v35：调剂输入行依匹配与库存状态显示绿色／黄色／红色；进货价格提醒依药品类型识别单方 NT$500、复方 NT$600。更新日志 v25：药品资料编辑窗口新增目前库存量直接盘点调整，并自动写入库存异动记录。更新日志 v21：药品资料页改为搜索优先，分类统计与常用进货药物默认收起，点击标题展开；搜索时自动收起统计；单方／复方快速筛选放到统计入口之前。v19：药品资料列表新增「全部／单方药／复方剂」快速筛选按钮，并显示各自数量；切换类型时清除类别筛选，避免误显示空列表。v17：药品分类统计可分别查看单方药与复方剂；新增常用进货药物排行，按进货次数统计并显示累计克数。v12：药品资料页改为手机资料卡片，并显示最近批号与效期；可直接从药品资料带入进货表。更新日志 v23：文字调剂新增复制贴上辨识，可将“药名＋克数”文本拆分为输入行；调剂记录编号自动预设且可编辑，保存时检查重复编号。更新日志 v11：</b>进货药品栏新增中文／完整拼音／拼音首字母搜索；重复药名显示药品编号以协助区分；药品资料搜索同步支持完整拼音与首字母；旧版本机资料会在读取时补上已知药名拼音，不清除库存与进货记录。v5 新增服用时间按钮（早/晚、饭前/饭后、睡前），并对单方进货价超过 NT$500、复方超过 NT$600 显示价格提醒，不会自动阻止入库。v6 新增用药天数 1–30 天选择。v8 修正疗程用量计算：早／中／晚可多选，每个时段算每日一次；睡前另算一次；饭前／饭后不增加次数；单次剂量乘以每日次数再乘以天数，计算疗程总克数、成本与库存扣减量。</div><div class="notice" id="backupStatus" style="margin-bottom:14px">备份建议：每次进货或调剂后，点击「一键备份全部资料」，将下载的 JSON 文件保存到 iPhone「文件」或云端硬盘。换设备时，再选择备份档恢复。</div>
   <div class="panel" style="margin-top:14px;border:1px solid #d9e2dc"><div class="panelhead"><div><h2 class="h2">库存来源检查</h2><div class="sub">逐批检查目前计算出库存总克数的来源；这里显示的是本机保存的库存批次。</div></div><button class="ghost" id="exportLots">导出库存明细</button></div><div id="lotsAudit"></div></div>
   <div class="field" style="margin-top:14px"><label>药品资料 / 成本设置说明</label><textarea readonly class="textarea" style="min-height:95px">厂家牌价、厂家折扣、实际进货成本、销售原价与折扣价均可之后调整。进货成本以实际批次为准。初始药品清单不代表真实库存；新建资料时库存应为 0，需实际盘点并录入后才有库存。</textarea></div>
   <div class="notice" style="margin-top:14px"><b>库存初始化说明：</b>此操作会先下载一份当前资料备份，再要求二次确认；确认后将库存归零，并清除本机进货、调剂及异动记录。所有药品主档及其中已编辑的厂牌、规格、价格等资料会保留。请先确认备份文件已保存。</div>
@@ -1213,12 +1218,103 @@ document.getElementById("savePurchase").onclick=()=>{
 };
 function showDispenseDetail(orderId){
  const o=state.dispenseOrders.find(x=>String(x.id)===String(orderId));if(!o)return;
- const grouped=new Map();(o.items||[]).forEach(i=>{const key=String(i.medId||i.name);if(!grouped.has(key))grouped.set(key,{...i,grams:0,cost:0,batches:[]});const g=grouped.get(key);g.grams+=num(i.grams);g.cost+=num(i.cost);if(i.lotId)g.batches.push(i.lotId);});
- const rows=[...grouped.values()].map((i,n)=>`<tr><td>${n+1}.</td><td><b>${esc(i.name||getMed(i.medId)?.name||"药品")}</b><div class="sub">${esc(i.brand||getMed(i.medId)?.brand||"")}</div></td><td>${num(i.perDoseGrams||i.grams).toFixed(2)} g</td><td>${num(i.dosesPerDay||1)} 次/日</td><td>${num(i.durationDays||o.durationDays||1)} 天</td><td><b>${num(i.grams).toFixed(2)} g</b></td><td>${money(i.cost)}</td></tr>`).join("");
- const totalG=(o.items||[]).reduce((a,i)=>a+num(i.grams),0),totalCost=(o.items||[]).reduce((a,i)=>a+num(i.cost),0);
- document.getElementById("modalRoot").innerHTML=`<div class="modalback" id="dispenseDetailBackdrop"><div class="modal"><h3>调剂明细｜${esc(o.id)}</h3><div class="sub">${new Date(o.date).toLocaleString("zh-TW")} · ${esc(o.status||"已保存记录")}</div><div class="notice" style="margin:12px 0">服用时间：${esc(o.timing||"未设置")}　｜　用药天数：${num(o.durationDays)||1} 天<br>药品总数：${grouped.size} 味　｜　疗程总克数：${totalG.toFixed(2)} g　｜　成本：${money(totalCost)}</div><div class="tablewrap"><table style="min-width:650px"><thead><tr><th>#</th><th>药品</th><th>单次剂量</th><th>每日次数</th><th>天数</th><th>实际记录克数</th><th>成本</th></tr></thead><tbody>${rows||'<tr><td colspan="7">此记录没有药品明细</td></tr>'}</tbody></table></div><div class="actions" style="margin-top:14px"><button class="primary" id="closeDispenseDetail">关闭</button></div></div></div>`;
- document.getElementById("closeDispenseDetail").onclick=()=>document.getElementById("modalRoot").innerHTML="";
+ const grouped=new Map();(o.items||[]).forEach(i=>{const key=String(i.medId||i.name);if(!grouped.has(key))grouped.set(key,{medId:i.medId,name:i.name,brand:i.brand,perDoseGrams:0,dosesPerDay:0,durationDays:0,grams:0,cost:0});const g=grouped.get(key);g.grams+=num(i.grams);g.cost+=num(i.cost);if(num(i.perDoseGrams)>0)g.perDoseGrams=num(i.perDoseGrams);if(num(i.dosesPerDay)>0)g.dosesPerDay=num(i.dosesPerDay);if(num(i.durationDays)>0)g.durationDays=num(i.durationDays);});
+ const days=Math.max(1,num(o.durationDays)||1);
+ const units=[...grouped.values()].map(g=>{
+  const doses=Math.max(1,num(g.dosesPerDay)||1),d=Math.max(1,num(g.durationDays)||days);
+  const per=num(g.perDoseGrams)>0?num(g.perDoseGrams):+(num(g.grams)/(doses*d)).toFixed(2);
+  return {medId:g.medId,name:g.name||(getMed(g.medId)||{}).name||"药品",brand:g.brand||(getMed(g.medId)||{}).brand||"",per, doses};
+ });
+ const deducted=(o.items||[]).some(i=>i.lotId)||String(o.status||"").includes("已调剂");
+ const rows=units.map((u,n)=>`<tr data-med="${esc(u.medId||"")}" data-name="${esc(u.name)}" data-brand="${esc(u.brand||"")}"><td>${n+1}.</td><td><b>${esc(u.name)}</b><div class="sub">${esc(u.brand||"—")}</div></td><td><input class="dd-in dd-per" type="number" step="0.1" min="0.1" value="${u.per}"></td><td><input class="dd-in dd-dose" type="number" step="1" min="1" max="6" value="${u.doses}"></td><td class="dd-g"><b>0.00 g</b></td><td class="dd-c">—</td><td><button type="button" class="ghost dd-del" style="padding:5px 9px;font-size:12px">移除</button></td></tr>`).join("");
+ document.getElementById("modalRoot").innerHTML=`<div class="modalback" id="dispenseDetailBackdrop"><div class="modal" style="max-width:820px"><h3>调剂明细｜${esc(o.id)}</h3><div class="sub">${new Date(o.date).toLocaleString("zh-TW")} · ${esc(o.status||"已保存记录")}</div><div class="notice" style="margin:12px 0 10px">可直接修改单次剂量、每日次数与用药天数，按「储存变更」后立即重算疗程克数与成本${deducted?"，并同步调整库存（多扣会补扣、少扣会退回）":"；此为计算记录，库存不会变动"}。服用时间：${esc(o.timing||"未设置")}。</div><div class="tablewrap"><table style="min-width:660px"><thead><tr><th style="width:44px">#</th><th>药品</th><th style="width:110px">单次剂量 g</th><th style="width:110px">每日次数</th><th style="width:110px">疗程克数</th><th style="width:110px">参考成本</th><th style="width:70px">操作</th></tr></thead><tbody id="ddBody" data-order-id="${esc(o.id)}">${rows||'<tr><td colspan="7">此记录没有药品明细</td></tr>'}</tbody></table></div><div class="dd-foot"><div style="display:flex;align-items:center;gap:8px">用药天数<input class="dd-in dd-days" id="ddDays" type="number" step="1" min="1" max="30" value="${days}"><span class="sub">天</span></div><div class="dd-total" id="ddTotal">—</div></div><div class="actions" style="margin-top:14px"><button class="primary" id="ddSave">储存变更</button><button class="soft" id="ddClose">取消</button></div></div></div>`;
+ const body=document.getElementById("ddBody");
+ const refresh=()=>{
+  const d=Math.max(1,num(document.getElementById("ddDays").value)||1);
+  let grams=0,cost=0,n=0;
+  body.querySelectorAll("tr[data-med],tr[data-name]").forEach(tr=>{
+   const per=num(tr.querySelector(".dd-per").value),doses=Math.max(1,num(tr.querySelector(".dd-dose").value)||1);
+   const g=per*doses*d;
+   const cg=tr.dataset.med?costFor(tr.dataset.med):0;
+   tr.querySelector(".dd-g").innerHTML=`<b>${g.toFixed(2)} g</b>`;
+   tr.querySelector(".dd-c").textContent=g>0?money(g*cg):"—";
+   grams+=g;cost+=g*cg;n++;
+  });
+  document.getElementById("ddTotal").textContent=`${n} 味药 · 疗程 ${grams.toFixed(2)} g · 参考成本 ${money(cost)}`;
+ };
+ body.querySelectorAll(".dd-per,.dd-dose").forEach(inp=>{inp.oninput=refresh;});
+ document.getElementById("ddDays").oninput=refresh;
+ body.querySelectorAll(".dd-del").forEach(b=>{b.onclick=()=>{const tr=b.closest("tr");tr.remove();renumber();refresh();};});
+ const renumber=()=>{[...body.querySelectorAll("tr[data-med],tr[data-name]")].forEach((tr,i)=>{const c=tr.querySelector("td");if(c)c.textContent=(i+1)+".";});};
+ refresh();
+ document.getElementById("ddSave").onclick=saveDispenseDetail;
+ document.getElementById("ddClose").onclick=()=>document.getElementById("modalRoot").innerHTML="";
  document.getElementById("dispenseDetailBackdrop").onclick=e=>{if(e.target.id==="dispenseDetailBackdrop")document.getElementById("modalRoot").innerHTML=""};
+}
+
+function saveDispenseDetail(){
+ const body=document.getElementById("ddBody");if(!body)return;
+ const o=state.dispenseOrders.find(x=>String(x.id)===String(body.dataset.orderId));
+ if(!o){toast("找不到这笔调剂记录");return;}
+ const days=Math.max(1,num(document.getElementById("ddDays").value)||num(o.durationDays)||1);
+ const specs=[];
+ body.querySelectorAll("tr[data-med],tr[data-name]").forEach(tr=>{
+  const medId=tr.dataset.med||"",name=tr.dataset.name||"药品",brand=tr.dataset.brand||"";
+  const per=num(tr.querySelector(".dd-per").value),doses=Math.max(1,num(tr.querySelector(".dd-dose").value)||1);
+  specs.push({medId,name,brand,per,doses,grams:+Math.max(0,per*doses*days).toFixed(4)});
+ });
+ if(!specs.length){toast("至少要保留一味药");return;}
+ if(specs.some(s=>s.per<=0)){toast("单次剂量需大于 0");return;}
+ const deducted=(o.items||[]).some(i=>i.lotId)||String(o.status||"").includes("已调剂");
+ const keyOf=i=>String(i.medId||i.name);
+ const back=new Map(),oldByMed=new Map(),oldInfo=new Map();
+ (o.items||[]).forEach(i=>{
+  const k=keyOf(i);
+  back.set(k,(back.get(k)||0)+num(i.grams));
+  oldByMed.set(k,(oldByMed.get(k)||0)+num(i.grams));
+  if(!oldInfo.has(k))oldInfo.set(k,{name:i.name||(getMed(i.medId)||{}).name||k,medId:i.medId||"",brand:i.brand||"",costPerG:num(i.costPerG)});
+ });
+ for(const s of specs){
+  if(!s.medId)continue;
+  const avail=stockFor(s.medId)+(deducted?(back.get(String(s.medId))||0):0);
+  if(s.grams>avail+1e-6){toast(`库存不足：${s.name} 需要 ${s.grams.toFixed(2)} g，可用 ${avail.toFixed(2)} g`);return;}
+ }
+ if(deducted){
+  (o.items||[]).forEach(it=>{if(!it.lotId)return;const lot=state.lots.find(l=>l.id===it.lotId);if(lot)lot.remainingG=+(num(lot.remainingG)+num(it.grams)).toFixed(4);});
+ }
+ const now=new Date().toISOString(),items=[];
+ for(const s of specs){
+  if(!s.medId||!deducted){
+   const cg=s.medId?costFor(s.medId):0;
+   items.push({medId:s.medId,name:s.name,brand:s.brand,perDoseGrams:s.per,dosesPerDay:s.doses,durationDays:days,grams:s.grams,costPerG:cg,cost:+(s.grams*cg).toFixed(4),deducted:false});
+   continue;
+  }
+  let rem=s.grams;
+  const lots=state.lots.filter(l=>l.medId===s.medId&&num(l.remainingG)>1e-9).sort((a,b)=>(a.expiry||"9999").localeCompare(b.expiry||"9999"));
+  for(const lot of lots){
+   if(rem<=1e-9)break;
+   const take=Math.min(rem,num(lot.remainingG));
+   lot.remainingG=+(num(lot.remainingG)-take).toFixed(4);
+   rem=+(rem-take).toFixed(4);
+   items.push({medId:s.medId,name:s.name,brand:s.brand||lot.brand,perDoseGrams:s.per,dosesPerDay:s.doses,durationDays:days,grams:take,costPerG:num(lot.costPerG),cost:+(take*num(lot.costPerG)).toFixed(4),lotId:lot.id,deducted:true});
+  }
+ }
+ o.items=items;o.durationDays=days;o.updatedAt=now;
+ o.text=specs.map(s=>`${s.name} ${s.per}g`).join("\n");
+ if(deducted){
+  const newByMed=new Map();items.forEach(i=>newByMed.set(keyOf(i),(newByMed.get(keyOf(i))||0)+num(i.grams)));
+  const allKeys=new Set([...newByMed.keys(),...oldByMed.keys()]);
+  allKeys.forEach(k=>{
+   const ng=newByMed.get(k)||0;
+   const delta=+(ng-(oldByMed.get(k)||0)).toFixed(4);
+   if(Math.abs(delta)<1e-6)return;
+   const it=items.find(i=>keyOf(i)===k)||{},old=oldInfo.get(k)||{};
+   state.movements.push({id:uid("MV"),date:now,type:"调剂调整",medId:it.medId||old.medId||"",name:it.name||old.name||k,grams:-delta,costPerG:num(it.costPerG)||old.costPerG||0,lotId:it.lotId||"",ref:o.id});
+  });
+ }
+ save();renderAll();
+ document.getElementById("modalRoot").innerHTML="";
+ toast(deducted?"已更新调剂明细，库存已同步调整":"已更新计算记录");
 }
 function rxOrderById(id){return state.dispenseOrders.find(o=>String(o.id)===String(id));}
 function copyOrderToRx(orderId){
@@ -1273,7 +1369,7 @@ function copyOrderText(orderId){
 }
 function renderRecent(){
  const root=document.getElementById("recentDispenses"),items=state.dispenseOrders.slice(0,30);
- root.innerHTML=items.length?`<div class="sub" style="margin-bottom:10px">每笔记录都可直接打开，查看当次调剂的药名、单次剂量、每日次数、天数、疗程总克数与成本。</div><div class="dispense-record-list">${items.map((o,index)=>{
+ root.innerHTML=items.length?`<div class="sub" style="margin-bottom:10px">每笔记录都可直接打开查看明细，并可在明细中修改单次剂量、每日次数与天数；储存后克数、成本与库存会一起重算。</div><div class="dispense-record-list">${items.map((o,index)=>{
   const count=new Set((o.items||[]).map(i=>i.medId||i.name)).size;
   const grams=(o.items||[]).reduce((s,i)=>s+num(i.grams),0);
   const cost=(o.items||[]).reduce((s,i)=>s+num(i.cost),0);
@@ -1382,7 +1478,7 @@ function syncLangUI(){
   b.title=langMode==="hans"?"目前：简体中文，点一下切换正体":"目前：正體中文，點一下切換簡體";
  }
  document.documentElement.lang=langMode==="hans"?"zh-Hans":"zh-Hant";
- document.title=tt("科学中药进销存 v4.8");
+ document.title=tt("科学中药进销存 v4.9");
 }
 applyLang(document.body);
 syncLangUI();
